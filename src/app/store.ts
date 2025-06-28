@@ -2,10 +2,12 @@ import { configureStore } from "@reduxjs/toolkit";
 import { apiSlice } from "../services/api/apislice";
 import authReducer from "../services/authSlice";
 import { setupListeners } from "@reduxjs/toolkit/query";
+import cartReducer from "../services/cartSlice";
 
 // Infer the RootState type from the store itself
 export const store = configureStore({
   reducer: {
+    cart: cartReducer,
     [apiSlice.reducerPath]: apiSlice.reducer, // RTK Query API slice
     auth: authReducer,
   },
