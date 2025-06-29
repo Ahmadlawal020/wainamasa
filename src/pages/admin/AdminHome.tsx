@@ -1,105 +1,144 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { CircleDollarSign, ShoppingBag, Users, Clock, TrendingUp, Package, AlertTriangle } from "lucide-react";
-import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, BarChart, Bar, PieChart, Pie, Cell } from "recharts";
+import {
+  CircleDollarSign,
+  ShoppingBag,
+  Users,
+  Clock,
+  TrendingUp,
+  Package,
+  AlertTriangle,
+} from "lucide-react";
+import {
+  LineChart,
+  Line,
+  XAxis,
+  YAxis,
+  CartesianGrid,
+  Tooltip,
+  ResponsiveContainer,
+  PieChart,
+  Pie,
+  Cell,
+} from "recharts";
+import { useGetOrdersQuery } from "../../services/api/orderApi";
+import { useState, useMemo } from "react";
 
 export default function AdminHome() {
+  const { data: orders = [], isLoading } = useGetOrdersQuery();
+
+  // Derived metrics
+  const { totalRevenue, totalOrders, pendingOrders, activeCustomers } =
+    useMemo(() => {
+      const completed = orders.filter((o: any) => o.status === "completed");
+      const totalRevenue = completed.reduce(
+        (sum: number, o: any) => sum + o.totalPrice,
+        0
+      );
+      const pending = orders.filter((o: any) => o.status === "pending").length;
+      const uniquePhones = new Set(
+        orders.map((o: any) => o.buyer?.phoneNumber)
+      );
+      return {
+        totalRevenue,
+        totalOrders: orders.length,
+        pendingOrders: pending,
+        activeCustomers: uniquePhones.size,
+      };
+    }, [orders]);
+
+  const formatCurrency = (n: number) =>
+    `₦${n.toLocaleString("en-NG", { minimumFractionDigits: 0 })}`;
+
+  // Monthly stats for chart
+  const monthlyStats = useMemo(() => {
+    const stats: Record<string, { revenue: number }> = {};
+    orders.forEach((o: any) => {
+      const d = new Date(o.createdAt),
+        key = `${d.getFullYear()}-${d.getMonth() + 1}`;
+      if (!stats[key]) stats[key] = { revenue: 0 };
+      if (o.status === "completed") {
+        stats[key].revenue += o.totalPrice;
+      }
+    });
+    return Object.entries(stats)
+      .map(([k, v]) => {
+        const [year, mo] = k.split("-");
+        return {
+          month: new Date(+year, +mo - 1).toLocaleString("default", {
+            month: "short",
+          }),
+          revenue: v.revenue,
+        };
+      })
+      .sort((a, b) =>
+        new Date(`${a.month} 1`) > new Date(`${b.month} 1`) ? 1 : -1
+      );
+  }, [orders]);
+
+  const trendPercent = useMemo(() => {
+    if (monthlyStats.length < 2) return "+0%";
+    const L = monthlyStats.length - 1;
+    const diff = monthlyStats[L].revenue - monthlyStats[L - 1].revenue;
+    const pct = (diff / monthlyStats[L - 1].revenue) * 100;
+    return `${pct >= 0 ? "+" : ""}${pct.toFixed(1)}%`;
+  }, [monthlyStats]);
+
+  // Recent orders
+  const recentOrders = useMemo(() => {
+    return orders
+      .slice(-4)
+      .reverse()
+      .map((o: any) => ({
+        id: o._id,
+        customer: o.buyer.fullName,
+        date: new Date(o.createdAt).toLocaleString("en-NG", {
+          dateStyle: "medium",
+          timeStyle: "short",
+        }),
+        amount: formatCurrency(o.totalPrice),
+        status: o.status,
+        items: o.items.length,
+      }));
+  }, [orders]);
+
   const stats = [
     {
       title: "Total Revenue",
-      value: "₦1,250,000",
+      value: formatCurrency(totalRevenue),
       icon: CircleDollarSign,
-      trend: "+12.5%",
-      trendUp: true,
+      trend: trendPercent,
+      trendUp: trendPercent.startsWith("+"),
     },
     {
       title: "Total Orders",
-      value: "2,847",
+      value: totalOrders.toString(),
       icon: ShoppingBag,
-      trend: "+18.2%",
+      trend: "+0%",
       trendUp: true,
     },
     {
       title: "Active Customers",
-      value: "1,238",
+      value: activeCustomers.toString(),
       icon: Users,
-      trend: "+23.1%",
+      trend: "+0%",
       trendUp: true,
     },
     {
       title: "Pending Orders",
-      value: "47",
+      value: pendingOrders.toString(),
       icon: Clock,
-      trend: "-8.3%",
+      trend: "-0%",
       trendUp: false,
     },
   ];
 
-  const revenueData = [
-    { month: 'Jan', revenue: 85000, orders: 120 },
-    { month: 'Feb', revenue: 92000, orders: 135 },
-    { month: 'Mar', revenue: 105000, orders: 158 },
-    { month: 'Apr', revenue: 118000, orders: 172 },
-    { month: 'May', revenue: 125000, orders: 185 },
-    { month: 'Jun', revenue: 135000, orders: 198 },
-  ];
-
-  const categoryData = [
-    { name: 'Masa', value: 45, color: '#F3801D' },
-    { name: 'Soups', value: 30, color: '#5C9A2C' },
-    { name: 'Meat', value: 15, color: '#8B5A3C' },
-    { name: 'Drinks', value: 10, color: '#4A90E2' },
-  ];
-
-  const recentOrders = [
-    {
-      id: "ORD-2025-001",
-      customer: "Amina Ibrahim",
-      date: "Jun 23, 2025, 2:30 PM",
-      amount: "₦4,500",
-      status: "pending",
-      items: 3,
-    },
-    {
-      id: "ORD-2025-002",
-      customer: "Ibrahim Musa",
-      date: "Jun 23, 2025, 1:20 PM",
-      amount: "₦7,200",
-      status: "preparing",
-      items: 5,
-    },
-    {
-      id: "ORD-2025-003",
-      customer: "Fatima Yusuf",
-      date: "Jun 23, 2025, 11:45 AM",
-      amount: "₦2,800",
-      status: "completed",
-      items: 2,
-    },
-    {
-      id: "ORD-2025-004",
-      customer: "Mohammed Ali",
-      date: "Jun 23, 2025, 10:15 AM",
-      amount: "₦6,300",
-      status: "completed",
-      items: 4,
-    },
-  ];
-
-  const topProducts = [
-    { name: "Plain Masa", sales: 847, revenue: "₦254,100", growth: "+15%" },
-    { name: "Miyan Taushe", sales: 632, revenue: "₦632,000", growth: "+28%" },
-    { name: "Peppered Chicken", sales: 421, revenue: "₦842,000", growth: "+12%" },
-    { name: "Zobo Drink", sales: 318, revenue: "₦318,000", growth: "+8%" },
-  ];
-
-  const getOrderStatusClass = (status: string) => {
-    switch (status) {
+  const getOrderStatusClass = (s: string) => {
+    switch (s) {
       case "pending":
         return "bg-yellow-100 text-yellow-800 border-yellow-200";
       case "preparing":
         return "bg-blue-100 text-blue-800 border-blue-200";
       case "ready":
-        return "bg-green-100 text-green-800 border-green-200";
       case "completed":
         return "bg-green-100 text-green-800 border-green-200";
       case "cancelled":
@@ -109,116 +148,83 @@ export default function AdminHome() {
     }
   };
 
+  const categoryData = [
+    { name: "Masa", value: 45, color: "#F3801D" },
+    { name: "Soups", value: 30, color: "#5C9A2C" },
+    { name: "Meat", value: 15, color: "#8B5A3C" },
+    { name: "Drinks", value: 10, color: "#4A90E2" },
+  ];
+
   return (
     <div className="space-y-6 sm:space-y-8">
-      {/* Header */}
-      <div className="text-left">
-        <h1 className="text-2xl sm:text-3xl font-bold tracking-tight text-neutral-900">Dashboard</h1>
-        <p className="text-neutral-600 mt-2 text-sm sm:text-base">
-          Welcome back! Here's what's happening with your business today.
-        </p>
+      <div>
+        <h1 className="text-2xl sm:text-3xl font-bold">Dashboard</h1>
+        <p className="text-neutral-600 mt-2">Here’s what’s happening today.</p>
       </div>
 
-      {/* Stats Cards */}
+      {/* Stats */}
       <div className="grid gap-4 sm:gap-6 grid-cols-1 sm:grid-cols-2 lg:grid-cols-4">
-        {stats.map((stat) => (
-          <Card key={stat.title} className="border-0 shadow-sm bg-white">
-            <CardHeader className="flex flex-row items-center justify-between pb-2 space-y-0 p-4 sm:p-6">
-              <CardTitle className="text-xs sm:text-sm font-medium text-neutral-600">
-                {stat.title}
+        {stats.map((s) => (
+          <Card key={s.title} className="bg-white shadow-sm">
+            <CardHeader className="flex justify-between p-4">
+              <CardTitle className="text-xs text-neutral-600">
+                {s.title}
               </CardTitle>
-              <stat.icon className="h-4 w-4 sm:h-5 sm:w-5 text-neutral-400" />
+              <s.icon className="h-5 w-5 text-neutral-400" />
             </CardHeader>
-            <CardContent className="p-4 sm:p-6 pt-0">
-              <div className="text-xl sm:text-2xl font-bold text-neutral-900">{stat.value}</div>
-              <p className={`text-xs flex items-center mt-1 ${stat.trendUp ? "text-green-600" : "text-red-600"}`}>
-                <TrendingUp className={`h-3 w-3 mr-1 ${stat.trendUp ? "" : "rotate-180"}`} />
-                {stat.trend} from last month
+            <CardContent className="p-4 pt-0">
+              <div className="text-xl font-bold text-neutral-900">
+                {isLoading ? "…" : s.value}
+              </div>
+              <p
+                className={`text-xs flex items-center mt-1 ${
+                  s.trendUp ? "text-green-600" : "text-red-600"
+                }`}
+              >
+                <TrendingUp
+                  className={`h-3 w-3 mr-1 ${s.trendUp ? "" : "rotate-180"}`}
+                />
+                {s.trend} from last month
               </p>
             </CardContent>
           </Card>
         ))}
       </div>
 
-      {/* Charts Section */}
-      <div className="grid gap-6 grid-cols-1 xl:grid-cols-2">
-        {/* Revenue Chart */}
-        <Card className="border-0 shadow-sm bg-white">
-          <CardHeader className="p-4 sm:p-6">
-            <CardTitle className="text-base sm:text-lg font-semibold text-neutral-900">Revenue Overview</CardTitle>
-          </CardHeader>
-          <CardContent className="p-4 sm:p-6 pt-0">
-            <ResponsiveContainer width="100%" height={250}>
-              <LineChart data={revenueData}>
-                <CartesianGrid strokeDasharray="3 3" stroke="#f0f0f0" />
-                <XAxis dataKey="month" stroke="#666" fontSize={12} />
-                <YAxis stroke="#666" fontSize={12} />
-                <Tooltip 
-                  contentStyle={{ 
-                    backgroundColor: 'white', 
-                    border: '1px solid #e0e0e0',
-                    borderRadius: '8px',
-                    boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1)',
-                    fontSize: '12px'
-                  }}
-                />
-                <Line type="monotone" dataKey="revenue" stroke="#5C9A2C" strokeWidth={3} dot={{ fill: '#5C9A2C', strokeWidth: 2, r: 4 }} />
-              </LineChart>
-            </ResponsiveContainer>
-          </CardContent>
-        </Card>
+      {/* Charts */}
 
-        {/* Category Distribution */}
-        <Card className="border-0 shadow-sm bg-white">
-          <CardHeader className="p-4 sm:p-6">
-            <CardTitle className="text-base sm:text-lg font-semibold text-neutral-900">Sales by Category</CardTitle>
-          </CardHeader>
-          <CardContent className="p-4 sm:p-6 pt-0">
-            <ResponsiveContainer width="100%" height={250}>
-              <PieChart>
-                <Pie
-                  data={categoryData}
-                  cx="50%"
-                  cy="50%"
-                  outerRadius={80}
-                  fill="#8884d8"
-                  dataKey="value"
-                  label={({ name, percent }) => `${name} ${(percent * 100).toFixed(0)}%`}
-                >
-                  {categoryData.map((entry, index) => (
-                    <Cell key={`cell-${index}`} fill={entry.color} />
-                  ))}
-                </Pie>
-                <Tooltip />
-              </PieChart>
-            </ResponsiveContainer>
-          </CardContent>
-        </Card>
-      </div>
-
-      {/* Tables Section */}
+      {/* Recent Orders & Top Products */}
       <div className="grid gap-6 grid-cols-1 xl:grid-cols-2">
         {/* Recent Orders */}
-        <Card className="border-0 shadow-sm bg-white">
-          <CardHeader className="p-4 sm:p-6">
-            <CardTitle className="text-base sm:text-lg font-semibold text-neutral-900">Recent Orders</CardTitle>
+        <Card className="bg-white shadow-sm">
+          <CardHeader className="p-4">
+            <CardTitle>Recent Orders</CardTitle>
           </CardHeader>
-          <CardContent className="p-4 sm:p-6 pt-0">
-            <div className="space-y-3 sm:space-y-4">
-              {recentOrders.map((order) => (
-                <div key={order.id} className="flex items-center justify-between p-3 sm:p-4 border border-neutral-100 rounded-lg">
+          <CardContent className="p-4 pt-0">
+            <div className="space-y-3">
+              {recentOrders.map((o) => (
+                <div
+                  key={o.id}
+                  className="flex items-center justify-between p-3 border rounded-lg"
+                >
                   <div className="flex-1 min-w-0">
-                    <div className="flex items-center justify-between flex-wrap gap-2">
-                      <p className="font-medium text-neutral-900 text-sm sm:text-base truncate">{order.customer}</p>
-                      <span className={`px-2 py-1 rounded-full text-xs font-medium border ${getOrderStatusClass(order.status)}`}>
-                        {order.status.charAt(0).toUpperCase() + order.status.slice(1)}
+                    <div className="flex justify-between items-center">
+                      <p className="font-medium">{o.customer}</p>
+                      <span
+                        className={`px-2 py-1 rounded-full text-xs border ${getOrderStatusClass(
+                          o.status
+                        )}`}
+                      >
+                        {o.status.charAt(0).toUpperCase() + o.status.slice(1)}
                       </span>
                     </div>
-                    <p className="text-xs sm:text-sm text-neutral-500 mt-1">{order.id} • {order.items} items</p>
-                    <p className="text-xs text-neutral-400 mt-1">{order.date}</p>
+                    <p className="text-xs text-neutral-500 mt-1">
+                      {o.id} • {o.items} items
+                    </p>
+                    <p className="text-xs text-neutral-400 mt-1">{o.date}</p>
                   </div>
-                  <div className="text-right ml-2">
-                    <p className="font-semibold text-neutral-900 text-sm sm:text-base">{order.amount}</p>
+                  <div className="text-right font-semibold text-neutral-900">
+                    {o.amount}
                   </div>
                 </div>
               ))}
@@ -227,26 +233,29 @@ export default function AdminHome() {
         </Card>
 
         {/* Top Products */}
-        <Card className="border-0 shadow-sm bg-white">
-          <CardHeader className="p-4 sm:p-6">
-            <CardTitle className="text-base sm:text-lg font-semibold text-neutral-900">Top Products</CardTitle>
+        <Card className="bg-white shadow-sm">
+          <CardHeader className="p-4">
+            <CardTitle>Top Products</CardTitle>
           </CardHeader>
-          <CardContent className="p-4 sm:p-6 pt-0">
-            <div className="space-y-3 sm:space-y-4">
-              {topProducts.map((product, index) => (
-                <div key={product.name} className="flex items-center justify-between p-3 sm:p-4 border border-neutral-100 rounded-lg">
-                  <div className="flex items-center space-x-3">
-                    <div className="flex items-center justify-center w-6 h-6 sm:w-8 sm:h-8 bg-green-100 rounded-full text-green-600 font-semibold text-xs sm:text-sm">
-                      {index + 1}
-                    </div>
-                    <div className="min-w-0">
-                      <p className="font-medium text-neutral-900 text-sm sm:text-base truncate">{product.name}</p>
-                      <p className="text-xs sm:text-sm text-neutral-500">{product.sales} sales</p>
-                    </div>
+          <CardContent className="p-4 pt-0">
+            <div className="space-y-3">
+              {[
+                { id: "1", name: "Masa", sales: "₦25,000", orders: 34 },
+                { id: "2", name: "Egusi Soup", sales: "₦18,000", orders: 22 },
+                { id: "3", name: "Zobo Drink", sales: "₦12,000", orders: 15 },
+              ].map((item) => (
+                <div
+                  key={item.id}
+                  className="flex items-center justify-between p-3 border rounded-lg"
+                >
+                  <div>
+                    <p className="font-medium">{item.name}</p>
+                    <p className="text-xs text-neutral-500 mt-1">
+                      {item.orders} orders
+                    </p>
                   </div>
-                  <div className="text-right ml-2">
-                    <p className="font-semibold text-neutral-900 text-sm sm:text-base">{product.revenue}</p>
-                    <p className="text-xs text-green-600">{product.growth}</p>
+                  <div className="text-right font-semibold text-neutral-900">
+                    {item.sales}
                   </div>
                 </div>
               ))}
@@ -255,37 +264,52 @@ export default function AdminHome() {
         </Card>
       </div>
 
-      {/* Quick Actions */}
       <Card className="border-0 shadow-sm bg-white">
         <CardHeader className="p-4 sm:p-6">
-          <CardTitle className="text-base sm:text-lg font-semibold text-neutral-900">Quick Actions</CardTitle>
+          <CardTitle className="text-base sm:text-lg font-semibold text-neutral-900">
+            Quick Actions
+          </CardTitle>
         </CardHeader>
         <CardContent className="p-4 sm:p-6 pt-0">
           <div className="grid gap-4 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3">
             <div className="flex items-center p-4 border border-neutral-100 rounded-lg hover:bg-neutral-50 transition-colors cursor-pointer">
               <Package className="h-6 w-6 sm:h-8 sm:w-8 text-green-500 mr-3 flex-shrink-0" />
               <div className="min-w-0">
-                <p className="font-medium text-neutral-900 text-sm sm:text-base">Manage Inventory</p>
-                <p className="text-xs sm:text-sm text-neutral-500">Update stock levels</p>
+                <p className="font-medium text-neutral-900 text-sm sm:text-base">
+                  Manage Inventory
+                </p>
+                <p className="text-xs sm:text-sm text-neutral-500">
+                  Update stock levels
+                </p>
               </div>
             </div>
             <div className="flex items-center p-4 border border-neutral-100 rounded-lg hover:bg-neutral-50 transition-colors cursor-pointer">
               <Users className="h-6 w-6 sm:h-8 sm:w-8 text-green-500 mr-3 flex-shrink-0" />
               <div className="min-w-0">
-                <p className="font-medium text-neutral-900 text-sm sm:text-base">Send Bulk Message</p>
-                <p className="text-xs sm:text-sm text-neutral-500">Notify customers</p>
+                <p className="font-medium text-neutral-900 text-sm sm:text-base">
+                  Send Bulk Message
+                </p>
+                <p className="text-xs sm:text-sm text-neutral-500">
+                  Notify customers
+                </p>
               </div>
             </div>
             <div className="flex items-center p-4 border border-neutral-100 rounded-lg hover:bg-neutral-50 transition-colors cursor-pointer sm:col-span-2 lg:col-span-1">
               <AlertTriangle className="h-6 w-6 sm:h-8 sm:w-8 text-yellow-500 mr-3 flex-shrink-0" />
               <div className="min-w-0">
-                <p className="font-medium text-neutral-900 text-sm sm:text-base">Low Stock Alert</p>
-                <p className="text-xs sm:text-sm text-neutral-500">3 items need restock</p>
+                <p className="font-medium text-neutral-900 text-sm sm:text-base">
+                  Low Stock Alert
+                </p>
+                <p className="text-xs sm:text-sm text-neutral-500">
+                  3 items need restock
+                </p>
               </div>
             </div>
           </div>
         </CardContent>
       </Card>
+
+      {/* Quick Actions card unchanged */}
     </div>
   );
 }

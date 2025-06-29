@@ -21,6 +21,10 @@ import AdminUsers from "./pages/admin/AdminUsers";
 import EditUserForm from "./pages/admin/EditUserForm";
 import NewProduct from "./pages/admin/NewProduct";
 import EditProduct from "./pages/admin/EditProduct";
+import Orders from "./pages/admin/Orders";
+import OrderDetailsPage from "./pages/admin/OrderDetail";
+import AdminOrders from "./pages/admin/AdminOrder";
+import ComingSoon from "./pages/ComingSoon";
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -73,10 +77,16 @@ const App = () => {
                     <Route path="newuser" element={<NewUser />} />
                     <Route path="edituser/:userId" element={<EditUserForm />} />
                   </Route>
-                  <Route path="orders" element={<AdminHome />} />
-                  <Route path="analytics" element={<AdminHome />} />
-                  <Route path="customers" element={<AdminHome />} />
-                  <Route path="settings" element={<AdminHome />} />
+                  <Route path="orders">
+                    <Route index element={<Orders />} />
+                    <Route
+                      path="orderdetails/:orderId"
+                      element={<OrderDetailsPage />}
+                    />
+                  </Route>
+                  <Route path="analytics" element={<AdminOrders />} />
+                  <Route path="customers" element={<ComingSoon />} />
+                  <Route path="settings" element={<ComingSoon />} />
                 </Route>
               </Route>
             </Route>
