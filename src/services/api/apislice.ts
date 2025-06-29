@@ -31,8 +31,8 @@ interface CustomQueryResult {
 }
 
 const baseQuery = fetchBaseQuery({
-  baseUrl: "http://localhost:5001",
-  // baseUrl: "https://waina.onrender.com",
+  // baseUrl: "http://localhost:5001",
+  baseUrl: "https://waina.onrender.com",
   credentials: "include",
   prepareHeaders: (headers, { getState }) => {
     const token = (getState() as { auth: { accessToken: string } }).auth
