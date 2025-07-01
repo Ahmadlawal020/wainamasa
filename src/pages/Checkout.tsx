@@ -27,7 +27,6 @@ import { DeliveryMethod } from "@/data/types";
 import { toast } from "@/components/ui/sonner";
 import Header from "@/components/layout/Header";
 import Footer from "@/components/layout/Footer";
-import { Calendar, Clock } from "lucide-react";
 import { deliveryZones, getDeliveryZoneById } from "@/data/deliveryZones";
 
 export default function Checkout() {
@@ -36,9 +35,14 @@ export default function Checkout() {
   const [verifyPayment] = useVerifyPaymentMutation();
 
   const items = useSelector((state: RootState) => state.cart.items);
+
   const totalAmount = items.reduce((acc, item) => {
-    const price = item.selectedPackage?.price || item.product.price;
-    return acc + price * item.quantity;
+    const isCustom = item.selectedPackage?.id === "custom";
+    const quantity = isCustom ? item.selectedPackage.quantity : item.quantity;
+    const unitPrice = isCustom
+      ? item.product.price
+      : item.selectedPackage?.price || item.product.price;
+    return acc + unitPrice * quantity;
   }, 0);
 
   const [name, setName] = useState("");
@@ -66,79 +70,14 @@ export default function Checkout() {
     }
   }, []);
 
-  // const handleSubmit = (e: React.FormEvent) => {
-  //   e.preventDefault();
-  //   setIsSubmitting(true);
-
-  //   const deliveryFee =
-  //     deliveryMethod === "delivery" && selectedZone ? selectedZone.price : 0;
-  //   const grandTotal = totalAmount + deliveryFee;
-
-  //   const paystack = window.PaystackPop?.setup({
-  //     key: "pk_test_076ac43c69aec7a3279d8048922477c32bbdf891", // your public key
-  //     email: email || "noemail@aroma-kitchen.com",
-  //     amount: grandTotal * 100, // in kobo
-  //     currency: "NGN",
-  //     ref: generateOrderId(),
-  //     callback: function (response: any) {
-  //       const orderPayload = {
-  //         reference: response.reference,
-  //         orderData: {
-  //           buyer: {
-  //             fullName: name,
-  //             phoneNumber: phone,
-  //             emailAddress: email || "noemail@aroma-kitchen.com",
-  //           },
-  //           items: items.map((item) => ({
-  //             product: item.product._id,
-  //             quantity: item.quantity,
-  //           })),
-  //           delivery: {
-  //             type: deliveryMethod,
-  //             address: deliveryAddress || "",
-  //           },
-  //           isScheduled,
-  //           scheduledDate,
-  //           scheduledTime,
-  //           paymentOnDelivery: false,
-  //           totalAmount: grandTotal,
-  //         },
-  //       };
-
-  //       verifyPayment(orderPayload)
-  //         .unwrap()
-  //         .then(() => {
-  //           dispatch(clearCart());
-  //           toast.success("Payment successful, order placed!");
-  //           navigate("/");
-  //         })
-  //         .catch((err) => {
-  //           console.error(err);
-  //           toast.error("Payment verified but failed to place order.");
-  //           setIsSubmitting(false);
-  //         });
-  //     },
-  //     onClose: function () {
-  //       setIsSubmitting(false);
-  //       toast.info("Payment cancelled.");
-  //     },
-  //   });
-
-  //   if (paystack) {
-  //     paystack.openIframe();
-  //   } else {
-  //     setIsSubmitting(false);
-  //     toast.error("Unable to load payment gateway.");
-  //   }
-  // };
-
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     setIsSubmitting(true);
 
     const deliveryFee =
       deliveryMethod === "delivery" && selectedZone ? selectedZone.price : 0;
-    const grandTotal = totalAmount + deliveryFee;
+
+    const grandTotal = totalAmount;
 
     const paystack = window.PaystackPop?.setup({
       key: "pk_test_076ac43c69aec7a3279d8048922477c32bbdf891",
@@ -161,11 +100,6 @@ export default function Checkout() {
         ],
       },
       callback: function (response: any) {
-        console.log(
-          "✅ Paystack payment completed. Reference:",
-          response.reference
-        );
-
         const orderPayload = {
           reference: response.reference,
           orderData: {
@@ -174,13 +108,20 @@ export default function Checkout() {
               phoneNumber: phone,
               emailAddress: email || "noemail@aroma-kitchen.com",
             },
-            items: items.map((item) => ({
-              product: item.product._id,
-              quantity: item.quantity,
-            })),
+            items: items.map((item) => {
+              const isCustom = item.selectedPackage?.id === "custom";
+              const quantity = isCustom
+                ? item.selectedPackage.quantity
+                : item.quantity;
+              return {
+                product: item.product._id,
+                quantity,
+              };
+            }),
             delivery: {
               type: deliveryMethod,
               address: deliveryAddress || "",
+              fee: deliveryFee,
             },
             isScheduled,
             scheduledDate,
@@ -190,38 +131,28 @@ export default function Checkout() {
           },
         };
 
-        console.log(
-          "📤 Sending order to backend for verification:",
-          orderPayload
-        );
-
         verifyPayment(orderPayload)
           .unwrap()
-          .then((data) => {
-            console.log("✅ Payment verified from backend. Response:", data);
+          .then(() => {
             dispatch(clearCart());
             toast.success("Payment successful, order placed!");
             navigate("/");
           })
-          .catch((err) => {
-            console.error("❌ Backend verification failed:", err);
+          .catch(() => {
             toast.error("Payment verified but failed to place order.");
             setIsSubmitting(false);
           });
       },
       onClose: function () {
         setIsSubmitting(false);
-        console.log("ℹ️ Paystack modal closed by user.");
         toast.info("Payment cancelled.");
       },
     });
 
     if (paystack) {
-      console.log("🟢 Opening Paystack iframe...");
       paystack.openIframe();
     } else {
       setIsSubmitting(false);
-      console.error("❌ Paystack setup failed or not loaded.");
       toast.error("Unable to load payment gateway.");
     }
   };
@@ -233,9 +164,6 @@ export default function Checkout() {
         <main className="container mx-auto px-4 py-12">
           <div className="max-w-2xl mx-auto text-center">
             <h1 className="text-xl font-medium mb-4">Your cart is empty</h1>
-            <p className="mb-6 text-sm">
-              Add some delicious items to your cart before checking out.
-            </p>
             <Button onClick={() => navigate("/menu")} size="sm">
               Browse Menu
             </Button>
@@ -255,9 +183,8 @@ export default function Checkout() {
 
           <form onSubmit={handleSubmit}>
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-              {/* Left Section */}
               <div className="md:col-span-2 space-y-5">
-                {/* Info Section */}
+                {/* User Info */}
                 <div className="bg-white p-5 rounded-lg shadow-sm border">
                   <h2 className="text-lg font-medium mb-4">Your Information</h2>
                   <div className="space-y-4">
@@ -359,28 +286,37 @@ export default function Checkout() {
                 </div>
               </div>
 
-              {/* Right Section */}
+              {/* Order Summary */}
               <div className="md:col-span-1">
                 <div className="bg-white p-5 rounded-lg shadow-sm border sticky top-24">
                   <h2 className="text-lg font-medium mb-4">Order Summary</h2>
-                  {items.map((item) => (
-                    <div
-                      key={item.product._id}
-                      className="flex justify-between mb-2 text-sm"
-                    >
-                      <div>
-                        {item.quantity}x {item.product.name}
-                        {item.selectedPackage &&
-                          ` (${item.selectedPackage.name})`}
+
+                  {items.map((item, index) => {
+                    const hasPackageOption = item.selectedPackage;
+                    const quantity = hasPackageOption
+                      ? item.selectedPackage.quantity
+                      : item.quantity;
+                    const unitPrice = hasPackageOption
+                      ? item.product.price
+                      : item.selectedPackage?.price || item.product.price;
+                    console.log(item);
+
+                    return (
+                      <div
+                        key={`${item.product._id}-${
+                          item.selectedPackage?.id || "default"
+                        }-${index}`}
+                        className="flex justify-between mb-2 text-sm"
+                      >
+                        <div>
+                          {quantity}x {item.product.name}
+                          {item.selectedPackage &&
+                            ` (${item.selectedPackage.name})`}
+                        </div>
+                        <div>{formatCurrency(unitPrice * quantity)}</div>
                       </div>
-                      <div>
-                        {formatCurrency(
-                          (item.selectedPackage?.price || item.product.price) *
-                            item.quantity
-                        )}
-                      </div>
-                    </div>
-                  ))}
+                    );
+                  })}
 
                   <hr className="my-3" />
                   <div className="text-sm">
@@ -399,16 +335,16 @@ export default function Checkout() {
                       </span>
                     </div>
                     <div className="flex justify-between font-medium mt-2">
-                      <span>Total</span>
-                      <span>
-                        {formatCurrency(totalAmount)}
-                        {deliveryMethod === "delivery" && selectedZone && (
-                          <span className="block text-xs text-neutral-500">
-                            + {formatCurrency(selectedZone.price)} on delivery
-                          </span>
-                        )}
-                      </span>
+                      <span>Total (Pay Now)</span>
+                      <span>{formatCurrency(totalAmount)}</span>
                     </div>
+
+                    {deliveryMethod === "delivery" && selectedZone && (
+                      <div className="flex justify-between text-xs text-neutral-500 mt-1">
+                        <span>+ Delivery (Paid on arrival)</span>
+                        <span>{formatCurrency(selectedZone.price)}</span>
+                      </div>
+                    )}
                   </div>
 
                   <Button
