@@ -109,10 +109,8 @@ export default function Checkout() {
               emailAddress: email || "noemail@aroma-kitchen.com",
             },
             items: items.map((item) => {
-              const isCustom = item.selectedPackage?.id === "custom";
-              const quantity = isCustom
-                ? item.selectedPackage.quantity
-                : item.quantity;
+              const quantity = item.selectedPackage.quantity;
+
               return {
                 product: item.product._id,
                 quantity,
@@ -293,9 +291,10 @@ export default function Checkout() {
 
                   {items.map((item, index) => {
                     const hasPackageOption = item.selectedPackage;
-                    const quantity = hasPackageOption
-                      ? item.selectedPackage.quantity
-                      : item.quantity;
+                    const quantity = item.selectedPackage.quantity;
+
+                    console.log(quantity);
+
                     const unitPrice = hasPackageOption
                       ? item.product.price
                       : item.selectedPackage?.price || item.product.price;

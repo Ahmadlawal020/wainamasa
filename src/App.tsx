@@ -25,6 +25,10 @@ import Orders from "./pages/admin/Orders";
 import OrderDetailsPage from "./pages/admin/OrderDetail";
 import AdminOrders from "./pages/admin/AdminOrder";
 import ComingSoon from "./pages/ComingSoon";
+import SettingsPage from "./pages/admin/SettingsPage";
+import CategoriesPage from "./pages/admin/CategoriesPage";
+import NewCategory from "./pages/admin/NewCategory";
+import EditCategory from "./pages/admin/EditCategory";
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -86,7 +90,17 @@ const App = () => {
                   </Route>
                   <Route path="analytics" element={<AdminOrders />} />
                   <Route path="customers" element={<ComingSoon />} />
-                  <Route path="settings" element={<ComingSoon />} />
+                  <Route path="settings">
+                    <Route index element={<SettingsPage />} />
+                    <Route path="categories">
+                      <Route index element={<CategoriesPage />} />
+                      <Route path="newCategory" element={<NewCategory />} />
+                      <Route
+                        path="EditCategory/:id"
+                        element={<EditCategory />}
+                      />
+                    </Route>
+                  </Route>
                 </Route>
               </Route>
             </Route>
