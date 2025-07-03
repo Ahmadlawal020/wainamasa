@@ -68,6 +68,22 @@ const OrderDetails = () => {
     }
   }, [order]);
 
+  // const handleStatusChange = async (newStatus: string) => {
+  //   try {
+  //     await updateStatus({ id: orderId!, status: newStatus }).unwrap();
+  //     toast({
+  //       title: "Success",
+  //       description: `Order status updated to ${newStatus}`,
+  //     });
+  //   } catch (err) {
+  //     toast({
+  //       title: "Error",
+  //       description: "Failed to update order status",
+  //       variant: "destructive",
+  //     });
+  //   }
+  // };
+
   const handleStatusChange = async (newStatus: string) => {
     try {
       await updateStatus({ id: orderId!, status: newStatus }).unwrap();
@@ -75,6 +91,11 @@ const OrderDetails = () => {
         title: "Success",
         description: `Order status updated to ${newStatus}`,
       });
+
+      // Navigate back after a short delay (optional)
+      setTimeout(() => {
+        navigate(-1);
+      }, 1000); // Delay by 1 second for better UX
     } catch (err) {
       toast({
         title: "Error",
