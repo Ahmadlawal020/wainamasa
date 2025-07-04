@@ -13,7 +13,7 @@ export default function CartSidebar() {
   const items = useSelector((state: RootState) => state.cart.items);
 
   const totalAmount = items.reduce((total, item) => {
-    const price = item.selectedPackage?.price;
+    const price = item.selectedPackage?.price || item.product.price;
     return total + price * item.quantity;
   }, 0);
 
@@ -97,46 +97,45 @@ export default function CartSidebar() {
                       item.notes ||
                       item.product.description}
                   </p>
+
                   <div className="flex justify-between items-center">
-                    <div className="flex items-center gap-2">
-                      {/* <Button
-      variant="ghost"
-      size="icon"
-      className="h-8 w-8 rounded-r-none"
-      onClick={() =>
-        dispatch(
-          updateQuantity({
-            productId: item.product._id,
-            packageId,
-            quantity: item.quantity - 1,
-          })
-        )
-      }
-      disabled={item.quantity <= 1}
-    >
-      <span className="text-lg font-medium">-</span>
-    </Button> */}
-                      <p className="min-w-[20px] text-center text-base text-neutral-700">
-                        {item.selectedPackage.quantity}
-                      </p>
-                      {/* <Button
-      variant="ghost"
-      size="icon"
-      className="h-8 w-8 rounded-l-none"
-      onClick={() =>
-        dispatch(
-          updateQuantity({
-            productId: item.product._id,
-            packageId,
-            quantity: item.quantity + 1,
-          })
-        )
-      }
-    >
-      <span className="text-lg font-medium">+</span>
-    </Button> */}
+                    <div className="flex items-center border rounded-md">
+                      <Button
+                        variant="ghost"
+                        size="icon"
+                        className="h-8 w-8 rounded-r-none"
+                        onClick={() =>
+                          dispatch(
+                            updateQuantity({
+                              productId: item.product._id,
+                              packageId,
+                              quantity: item.quantity - 1,
+                            })
+                          )
+                        }
+                        disabled={item.quantity <= 1}
+                      >
+                        <span className="text-lg font-medium">-</span>
+                      </Button>
+                      <span className="w-8 text-center">{item.quantity}</span>
+                      <Button
+                        variant="ghost"
+                        size="icon"
+                        className="h-8 w-8 rounded-l-none"
+                        onClick={() =>
+                          dispatch(
+                            updateQuantity({
+                              productId: item.product._id,
+                              packageId,
+                              quantity: item.quantity + 1,
+                            })
+                          )
+                        }
+                      >
+                        <span className="text-lg font-medium">+</span>
+                      </Button>
                     </div>
-                    <span className="font-medium text-base">
+                    <span className="font-medium">
                       {formatCurrency(itemPrice * item.quantity)}
                     </span>
                   </div>

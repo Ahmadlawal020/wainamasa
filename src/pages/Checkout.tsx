@@ -35,14 +35,9 @@ export default function Checkout() {
   const [verifyPayment] = useVerifyPaymentMutation();
 
   const items = useSelector((state: RootState) => state.cart.items);
-
   const totalAmount = items.reduce((acc, item) => {
-    const isCustom = item.selectedPackage?.id === "custom";
-    const quantity = isCustom ? item.selectedPackage.quantity : item.quantity;
-    const unitPrice = isCustom
-      ? item.product.price
-      : item.selectedPackage?.price || item.product.price;
-    return acc + unitPrice * quantity;
+    const price = item.selectedPackage?.price || item.product.price;
+    return acc + price * item.quantity;
   }, 0);
 
   const [name, setName] = useState("");
@@ -74,10 +69,7 @@ export default function Checkout() {
     e.preventDefault();
     setIsSubmitting(true);
 
-    const deliveryFee =
-      deliveryMethod === "delivery" && selectedZone ? selectedZone.price : 0;
-
-    const grandTotal = totalAmount;
+    const grandTotal = totalAmount; // delivery is paid on arrival, so don't include it
 
     const paystack = window.PaystackPop?.setup({
       key: "pk_test_076ac43c69aec7a3279d8048922477c32bbdf891",
@@ -108,18 +100,14 @@ export default function Checkout() {
               phoneNumber: phone,
               emailAddress: email || "noemail@aroma-kitchen.com",
             },
-            items: items.map((item) => {
-              const quantity = item.selectedPackage.quantity;
-
-              return {
-                product: item.product._id,
-                quantity,
-              };
-            }),
+            items: items.map((item) => ({
+              product: item.product._id,
+              quantity: item.quantity,
+            })),
             delivery: {
               type: deliveryMethod,
               address: deliveryAddress || "",
-              fee: deliveryFee,
+              fee: 0, // Not included in total, paid on delivery
             },
             isScheduled,
             scheduledDate,
@@ -162,6 +150,9 @@ export default function Checkout() {
         <main className="container mx-auto px-4 py-12">
           <div className="max-w-2xl mx-auto text-center">
             <h1 className="text-xl font-medium mb-4">Your cart is empty</h1>
+            <p className="mb-6 text-sm">
+              Add some delicious items to your cart before checking out.
+            </p>
             <Button onClick={() => navigate("/menu")} size="sm">
               Browse Menu
             </Button>
@@ -290,15 +281,9 @@ export default function Checkout() {
                   <h2 className="text-lg font-medium mb-4">Order Summary</h2>
 
                   {items.map((item, index) => {
-                    const hasPackageOption = item.selectedPackage;
-                    const quantity = item.selectedPackage.quantity;
-
-                    console.log(quantity);
-
-                    const unitPrice = hasPackageOption
-                      ? item.product.price
-                      : item.selectedPackage?.price || item.product.price;
-                    console.log(item);
+                    const quantity = item.quantity;
+                    const unitPrice =
+                      item.selectedPackage?.price || item.product.price;
 
                     return (
                       <div

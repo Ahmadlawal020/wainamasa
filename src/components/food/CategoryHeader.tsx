@@ -1,5 +1,12 @@
 import { useState } from "react";
-import { Utensils, Soup, Coffee, Package, ShoppingBag } from "lucide-react";
+import {
+  Utensils,
+  Soup,
+  Coffee,
+  Package,
+  ShoppingBag,
+  Box,
+} from "lucide-react";
 import { cn } from "@/lib/utils";
 
 interface Category {
@@ -21,6 +28,7 @@ export default function CategoryHeader({
     { id: "meat", label: "Meat", icon: Utensils },
     { id: "soups", label: "Soups", icon: Soup },
     { id: "drinks", label: "Drinks", icon: Coffee },
+    { id: "comboDeals", label: "Combo Deals", icon: Box },
     { id: "extras", label: "Extras", icon: ShoppingBag },
   ];
 
