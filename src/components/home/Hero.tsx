@@ -12,12 +12,13 @@ export default function Hero() {
       <div className="container mx-auto px-4 relative">
         <div className="grid grid-cols-1 lg:grid-cols-2 items-center gap-8 lg:gap-12">
           <div className="text-left">
-            <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold text-neutral-900 mb-4 md:mb-6 leading-tight tracking-[-0.02em]">
-              Enjoy Fresh Meals, Everytime!
-            </h1>
+           <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold text-neutral-900 mb-4 md:mb-6 leading-tight tracking-[-0.02em]">
+             Enjoy <span className="text-green-600">Fresh Meals</span>, Every Time!
+           </h1>
             <p className="text-base md:text-lg text-neutral-700 leading-relaxed mb-6 md:mb-8 max-w-2xl">
-              Fresh, home-cooked meals made with care — professionally delivered
+              Taste the comfort of home in every bite! Hand-prepared meals from our kitchen, delivered with care, quality, and flavor you can trust.
             </p>
+
           </div>
           
           <div className="relative order-first lg:order-last">
