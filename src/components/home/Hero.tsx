@@ -13,9 +13,9 @@ export default function Hero() {
         <div className="grid grid-cols-1 lg:grid-cols-2 items-center gap-8 lg:gap-12">
           <div className="text-left">
             <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold text-neutral-900 mb-4 md:mb-6 leading-tight tracking-[-0.02em]">
-              Experience the Rich Heritage of 
-              <span className="text-green-500 block mt-1">Northern Nigerian</span> 
-              Cuisine
+              Enjoy 
+              <span className="text-green-500 block mt-1">Fresh Meals</span> 
+              Everytime!
             </h1>
             <p className="text-base md:text-lg text-neutral-700 leading-relaxed mb-6 md:mb-8 max-w-2xl">
               Savor our handcrafted masa—a culinary treasure passed down through generations. 
