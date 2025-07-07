@@ -33,19 +33,20 @@ export default function Hero() {
             </div>
 
             {/* Open Hours Badge */}
-            <div className="absolute -bottom-3 -right-3 md:-bottom-5 md:-right-5 bg-white shadow-lg rounded-lg p-3 md:p-4 max-w-[180px] md:max-w-[200px] transform rotate-2">
-              <div className="flex items-center">
-                <div className="bg-green-50 p-1.5 rounded-full mr-3 flex-shrink-0">
-                  <div className="bg-green-500 text-white h-8 w-8 rounded-full flex items-center justify-center">
-                    <span className="font-medium text-sm">8–6</span>
-                  </div>
-                </div>
-                <div>
-                  <h3 className="font-medium text-sm">Open Hours</h3>
-                  <p className="text-xs text-neutral-500">8am to 6pm everyday</p>
-                </div>
-              </div>
-            </div>
+<div className="absolute -bottom-3 -left-3 md:-bottom-5 md:-left-5 bg-white shadow-lg rounded-lg p-3 md:p-4 max-w-[180px] md:max-w-[200px] transform rotate-2">
+  <div className="flex items-center">
+    <div className="bg-green-50 p-1.5 rounded-full mr-3 flex-shrink-0">
+      <div className="bg-green-500 text-white h-8 w-8 rounded-full flex items-center justify-center">
+        <span className="font-medium text-sm">8–6</span>
+      </div>
+    </div>
+    <div>
+      <h3 className="font-medium text-sm">Open Hours</h3>
+      <p className="text-xs text-neutral-500">8am to 6pm everyday</p>
+    </div>
+  </div>
+</div>
+
           </div>
         </div>
       </div>
