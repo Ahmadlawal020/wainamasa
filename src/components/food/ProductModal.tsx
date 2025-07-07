@@ -37,12 +37,10 @@ export default function ProductModal({
   const dispatch = useDispatch();
   const [quantity, setQuantity] = useState(1);
   const [notes, setNotes] = useState("");
-  const [selectedPackage, setSelectedPackage] = useState<
-    PackageOption | undefined
-  >(product.packageOptions?.[0]);
-  const [customQuantity, setCustomQuantity] = useState(
-    product.minimumOrder || 4
+  const [selectedPackage, setSelectedPackage] = useState<PackageOption | undefined>(
+    product.packageOptions?.[0]
   );
+  const [customQuantity, setCustomQuantity] = useState(product.minimumOrder || 4);
 
   const isCustomOrder = selectedPackage?.id === "custom";
   const minOrder = product.minimumOrder || 4;
@@ -56,53 +54,43 @@ export default function ProductModal({
     }
   }, [open, product]);
 
-  const handleQuantityChange = (value: number) => {
-    if (value >= 1) setQuantity(value);
+  const handleQuantityChange = (val: number) => {
+    if (val >= 1) setQuantity(val);
   };
 
-  const handleCustomQuantityChange = (value: number) => {
-    if (value >= minOrder) setCustomQuantity(value);
+  const handleCustomQtyChange = (val: number) => {
+    if (val >= minOrder) setCustomQuantity(val);
   };
 
   const handleAddToCart = () => {
-    const finalPackage =
-      isCustomOrder && product.price
-        ? {
-            ...selectedPackage!,
-            quantity: customQuantity,
-            price: customQuantity * product.price,
-          }
-        : selectedPackage;
+    const finalPackage = isCustomOrder
+      ? {
+          ...selectedPackage!,
+          quantity: customQuantity,
+          price: customQuantity * product.price!,
+        }
+      : selectedPackage;
 
-    dispatch(
-      addToCart({
-        product,
-        quantity,
-        notes,
-        selectedPackage: finalPackage,
-      })
-    );
-
-    setQuantity(1);
-    setNotes("");
+    dispatch(addToCart({ product, quantity, notes, selectedPackage: finalPackage }));
     onOpenChange(false);
   };
 
-  const currentPrice = selectedPackage?.price || product.price || 0;
+  const unitPrice = selectedPackage?.price || product.price || 0;
   const totalPrice = isCustomOrder
-    ? product.price * customQuantity * quantity
-    : currentPrice * quantity;
+    ? product.price! * customQuantity * quantity
+    : unitPrice * quantity;
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="sm:max-w-[500px] p-0 overflow-hidden rounded-lg max-h-[90vh]">
+      <DialogContent className="sm:max-w-[520px] p-0 overflow-hidden rounded-xl max-h-[90vh]">
         <ScrollArea className="max-h-[90vh]">
           <div className="flex flex-col">
+            {/* Product Image */}
             <AspectRatio ratio={16 / 9} className="bg-muted">
               <img
                 src={product.image}
                 alt={product.product}
-                className="w-full h-full object-cover"
+                className="w-full h-full object-cover rounded-t-xl"
               />
             </AspectRatio>
 
@@ -110,10 +98,10 @@ export default function ProductModal({
               <DialogHeader>
                 <div className="flex justify-between items-start">
                   <div>
-                    <DialogTitle className="text-xl font-bold">
+                    <DialogTitle className="text-2xl font-semibold">
                       {product.product}
                     </DialogTitle>
-                    <DialogDescription className="text-brand-500 font-medium mt-1">
+                    <DialogDescription className="text-brand-600 font-medium mt-1">
                       {product.hasPackageOptions
                         ? `From ${formatCurrency(product.price)}`
                         : formatCurrency(product.price)}
@@ -122,57 +110,62 @@ export default function ProductModal({
                 </div>
               </DialogHeader>
 
-              <p className="text-neutral-600">{product.description}</p>
+              {product.description && (
+                <p className="text-sm text-neutral-700 leading-relaxed">
+                  {product.description}
+                </p>
+              )}
 
-              {product.hasPackageOptions &&
-                product.packageOptions?.length > 0 && (
-                  <div className="space-y-3">
-                    <label className="text-sm font-medium">
-                      Choose Package
-                    </label>
-                    <RadioGroup
-                      value={selectedPackage?.id}
-                      onValueChange={(value) => {
-                        const found = product.packageOptions?.find(
-                          (p) => p.id === value
-                        );
-                        setSelectedPackage(found);
-                      }}
-                      className="flex flex-col space-y-2"
-                    >
-                      {product.packageOptions.map((pkg) => (
-                        <label
-                          key={pkg.id}
-                          className={`flex items-center justify-between p-3 border rounded-md cursor-pointer transition-colors ${
-                            selectedPackage?.id === pkg.id
-                              ? "border-green-500 bg-green-50"
-                              : "border-gray-200"
-                          }`}
-                        >
-                          <div className="flex items-center gap-3">
-                            <RadioGroupItem value={pkg.id} id={pkg.id} />
-                            <div>
-                              <p className="font-medium text-sm">{pkg.name}</p>
+              {/* Package Options */}
+              {product.hasPackageOptions && product.packageOptions?.length > 0 && (
+                <div className="space-y-3">
+                  <label className="text-sm font-medium">Choose Package</label>
+                  <RadioGroup
+                    value={selectedPackage?.id}
+                    onValueChange={(id) =>
+                      setSelectedPackage(
+                        product.packageOptions?.find((p) => p.id === id)
+                      )
+                    }
+                    className="flex flex-col gap-2"
+                  >
+                    {product.packageOptions.map((pkg) => (
+                      <label
+                        key={pkg.id}
+                        htmlFor={pkg.id}
+                        className={`flex items-center justify-between p-3 border rounded-lg cursor-pointer transition-all duration-200 ${
+                          selectedPackage?.id === pkg.id
+                            ? "border-green-600 bg-green-50"
+                            : "border-gray-200 hover:bg-gray-50"
+                        }`}
+                      >
+                        <div className="flex items-start gap-3">
+                          <RadioGroupItem value={pkg.id} id={pkg.id} />
+                          <div className="space-y-0.5">
+                            <p className="text-sm font-medium">{pkg.name}</p>
+                            {pkg.description && (
                               <p className="text-xs text-neutral-500">
                                 {pkg.description}
                               </p>
-                            </div>
+                            )}
                           </div>
-                          <span className="font-medium text-green-500">
-                            {pkg.id === "custom"
-                              ? `From ${formatCurrency(pkg.price)}`
-                              : formatCurrency(pkg.price)}
-                          </span>
-                        </label>
-                      ))}
-                    </RadioGroup>
-                  </div>
-                )}
+                        </div>
+                        <span className="text-green-600 text-sm font-semibold">
+                          {pkg.id === "custom"
+                            ? `From ${formatCurrency(pkg.price)}`
+                            : formatCurrency(pkg.price)}
+                        </span>
+                      </label>
+                    ))}
+                  </RadioGroup>
+                </div>
+              )}
 
+              {/* Custom Quantity Input */}
               {isCustomOrder && (
-                <div className="space-y-2 border-t border-dashed pt-4">
+                <div className="pt-4 border-t border-dashed space-y-2">
                   <label className="text-sm font-medium">
-                    Custom Quantity (Minimum: {minOrder})
+                    Custom Quantity (Min: {minOrder})
                   </label>
                   <div className="flex items-center">
                     <Button
@@ -180,20 +173,16 @@ export default function ProductModal({
                       variant="outline"
                       size="icon"
                       className="h-8 w-8"
-                      onClick={() =>
-                        handleCustomQuantityChange(customQuantity - 1)
-                      }
+                      onClick={() => handleCustomQtyChange(customQuantity - 1)}
                       disabled={customQuantity <= minOrder}
                     >
-                      <ChevronDown className="h-4 w-4" />
+                      <ChevronDown className="w-4 h-4" />
                     </Button>
                     <Input
                       type="number"
                       value={customQuantity}
                       onChange={(e) =>
-                        handleCustomQuantityChange(
-                          parseInt(e.target.value) || minOrder
-                        )
+                        handleCustomQtyChange(parseInt(e.target.value) || minOrder)
                       }
                       className="w-16 text-center mx-2 h-8"
                       min={minOrder}
@@ -203,19 +192,18 @@ export default function ProductModal({
                       variant="outline"
                       size="icon"
                       className="h-8 w-8"
-                      onClick={() =>
-                        handleCustomQuantityChange(customQuantity + 1)
-                      }
+                      onClick={() => handleCustomQtyChange(customQuantity + 1)}
                     >
-                      <ChevronUp className="h-4 w-4" />
+                      <ChevronUp className="w-4 h-4" />
                     </Button>
-                    <span className="ml-3 text-base text-neutral-500">
-                      {formatCurrency(product.price * customQuantity)}
+                    <span className="ml-3 text-sm text-neutral-600">
+                      {formatCurrency(product.price! * customQuantity)}
                     </span>
                   </div>
                 </div>
               )}
 
+              {/* Quantity Selector */}
               <div className="space-y-2">
                 <label className="text-sm font-medium">How many</label>
                 <div className="flex items-center">
@@ -227,7 +215,7 @@ export default function ProductModal({
                     onClick={() => handleQuantityChange(quantity - 1)}
                     disabled={quantity <= 1}
                   >
-                    <ChevronDown className="h-4 w-4" />
+                    <ChevronDown className="w-4 h-4" />
                   </Button>
                   <Input
                     type="number"
@@ -245,21 +233,23 @@ export default function ProductModal({
                     className="h-8 w-8"
                     onClick={() => handleQuantityChange(quantity + 1)}
                   >
-                    <ChevronUp className="h-4 w-4" />
+                    <ChevronUp className="w-4 h-4" />
                   </Button>
                 </div>
               </div>
 
-              <div className="pt-2 border-t">
-                <div className="flex justify-between items-center">
-                  <span className="font-medium text-sm">Price:</span>
-                  <span className="text-lg font-bold text-green-500">
+              {/* Total Price */}
+              <div className="pt-4 border-t">
+                <div className="flex justify-between text-sm font-medium">
+                  <span>Total Price</span>
+                  <span className="text-lg text-green-600 font-semibold">
                     {formatCurrency(totalPrice)}
                   </span>
                 </div>
               </div>
 
-              <div className="flex justify-between items-center pt-2">
+              {/* Actions */}
+              <div className="flex justify-between items-center pt-4">
                 <DialogClose asChild>
                   <Button variant="outline" size="sm">
                     Cancel
@@ -268,9 +258,9 @@ export default function ProductModal({
                 <Button
                   onClick={handleAddToCart}
                   size="sm"
-                  className="bg-green-500 hover:bg-green-600 text-white"
+                  className="bg-green-600 hover:bg-green-700 text-white"
                 >
-                  Add to Cart <ShoppingCartIcon className="ml-2 h-4 w-4" />
+                  Add to Cart <ShoppingCartIcon className="ml-2 w-4 h-4" />
                 </Button>
               </div>
             </div>
