@@ -40,11 +40,11 @@ export default function Checkout() {
     return acc + price * item.quantity;
   }, 0);
 
+  // Form States
   const [name, setName] = useState("");
   const [phone, setPhone] = useState("");
   const [email, setEmail] = useState("");
-  const [deliveryMethod, setDeliveryMethod] =
-    useState<DeliveryMethod>("pickup");
+  const [deliveryMethod, setDeliveryMethod] = useState<DeliveryMethod>("pickup");
   const [deliveryZone, setDeliveryZone] = useState("");
   const [deliveryAddress, setDeliveryAddress] = useState("");
   const [isScheduled, setIsScheduled] = useState(false);
@@ -52,10 +52,9 @@ export default function Checkout() {
   const [scheduledTime, setScheduledTime] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
 
-  const selectedZone = deliveryZone
-    ? getDeliveryZoneById(deliveryZone)
-    : undefined;
+  const selectedZone = deliveryZone ? getDeliveryZoneById(deliveryZone) : undefined;
 
+  // Load Paystack
   useEffect(() => {
     if (!window.PaystackPop) {
       const script = document.createElement("script");
@@ -69,7 +68,7 @@ export default function Checkout() {
     e.preventDefault();
     setIsSubmitting(true);
 
-    const grandTotal = totalAmount; // delivery is paid on arrival, so don't include it
+    const grandTotal = totalAmount; // delivery fee is paid on arrival
 
     const paystack = window.PaystackPop?.setup({
       key: "pk_test_076ac43c69aec7a3279d8048922477c32bbdf891",
@@ -79,19 +78,11 @@ export default function Checkout() {
       ref: generateOrderId(),
       metadata: {
         custom_fields: [
-          {
-            display_name: "Full Name",
-            variable_name: "full_name",
-            value: name,
-          },
-          {
-            display_name: "Phone Number",
-            variable_name: "phone_number",
-            value: phone,
-          },
+          { display_name: "Full Name", variable_name: "full_name", value: name },
+          { display_name: "Phone Number", variable_name: "phone_number", value: phone },
         ],
       },
-      callback: function (response: any) {
+      callback: (response: any) => {
         const orderPayload = {
           reference: response.reference,
           orderData: {
@@ -107,7 +98,7 @@ export default function Checkout() {
             delivery: {
               type: deliveryMethod,
               address: deliveryAddress || "",
-              fee: 0, // Not included in total, paid on delivery
+              fee: 0,
             },
             isScheduled,
             scheduledDate,
@@ -129,7 +120,7 @@ export default function Checkout() {
             setIsSubmitting(false);
           });
       },
-      onClose: function () {
+      onClose: () => {
         setIsSubmitting(false);
         toast.info("Payment cancelled.");
       },
@@ -149,8 +140,8 @@ export default function Checkout() {
         <Header />
         <main className="container mx-auto px-4 py-12">
           <div className="max-w-2xl mx-auto text-center">
-            <h1 className="text-xl font-medium mb-4">Your cart is empty</h1>
-            <p className="mb-6 text-sm">
+            <h1 className="text-xl font-semibold mb-4">Your cart is empty</h1>
+            <p className="mb-6 text-sm text-muted-foreground">
               Add some delicious items to your cart before checking out.
             </p>
             <Button onClick={() => navigate("/menu")} size="sm">
@@ -168,177 +159,106 @@ export default function Checkout() {
       <Header />
       <main className="container mx-auto px-4 py-10 bg-neutral-50">
         <div className="max-w-5xl mx-auto">
-          <h1 className="text-2xl font-medium mb-6">Checkout</h1>
+          <h1 className="text-2xl font-semibold mb-6">Checkout</h1>
 
-          <form onSubmit={handleSubmit}>
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-              <div className="md:col-span-2 space-y-5">
-                {/* User Info */}
-                <div className="bg-white p-5 rounded-lg shadow-sm border">
-                  <h2 className="text-lg font-medium mb-4">Your Information</h2>
-                  <div className="space-y-4">
-                    <Input
-                      required
-                      placeholder="Full Name"
-                      value={name}
-                      onChange={(e) => setName(e.target.value)}
-                    />
-                    <Input
-                      required
-                      placeholder="Phone Number"
-                      value={phone}
-                      onChange={(e) => setPhone(e.target.value)}
-                    />
-                    <Input
-                      placeholder="Email Address (optional)"
-                      type="email"
-                      value={email}
-                      onChange={(e) => setEmail(e.target.value)}
-                    />
-                  </div>
-                </div>
-
-                {/* Delivery Section */}
-                <div className="bg-white p-5 rounded-lg shadow-sm border">
-                  <h2 className="text-lg font-medium mb-4">Delivery Options</h2>
-                  <RadioGroup
-                    value={deliveryMethod}
-                    onValueChange={(val) =>
-                      setDeliveryMethod(val as DeliveryMethod)
-                    }
-                    className="mb-4"
-                  >
-                    <RadioGroupItem value="pickup" id="pickup" />
-                    <Label htmlFor="pickup">Pickup (Free)</Label>
-                    <RadioGroupItem
-                      value="delivery"
-                      id="delivery"
-                      className="ml-4"
-                    />
-                    <Label htmlFor="delivery">Delivery (Paid on arrival)</Label>
-                  </RadioGroup>
-
-                  {deliveryMethod === "delivery" && (
-                    <>
-                      <Select
-                        value={deliveryZone}
-                        onValueChange={setDeliveryZone}
-                        required
-                      >
-                        <SelectTrigger>
-                          <SelectValue placeholder="Select delivery zone" />
-                        </SelectTrigger>
-                        <SelectContent>
-                          {deliveryZones.map((zone) => (
-                            <SelectItem key={zone.id} value={zone.id}>
-                              {zone.name} - {formatCurrency(zone.price)}
-                            </SelectItem>
-                          ))}
-                        </SelectContent>
-                      </Select>
-                      <Input
-                        placeholder="Detailed Address"
-                        required
-                        value={deliveryAddress}
-                        onChange={(e) => setDeliveryAddress(e.target.value)}
-                      />
-                    </>
-                  )}
-
-                  <div className="mt-4">
-                    <input
-                      type="checkbox"
-                      id="scheduled"
-                      checked={isScheduled}
-                      onChange={() => setIsScheduled(!isScheduled)}
-                    />
-                    <label htmlFor="scheduled" className="ml-2">
-                      Schedule for later
-                    </label>
-                    {isScheduled && (
-                      <div className="grid grid-cols-2 gap-4 mt-2">
-                        <Input
-                          type="date"
-                          value={scheduledDate}
-                          onChange={(e) => setScheduledDate(e.target.value)}
-                          required
-                        />
-                        <Input
-                          type="time"
-                          value={scheduledTime}
-                          onChange={(e) => setScheduledTime(e.target.value)}
-                          required
-                        />
-                      </div>
-                    )}
-                  </div>
+          <form onSubmit={handleSubmit} className="grid grid-cols-1 md:grid-cols-3 gap-6">
+            {/* Form Section */}
+            <div className="md:col-span-2 space-y-6">
+              {/* User Info */}
+              <div className="bg-white p-5 rounded-lg shadow-sm border">
+                <h2 className="text-lg font-medium mb-4">Your Information</h2>
+                <div className="space-y-4">
+                  <Input required placeholder="Full Name" value={name} onChange={(e) => setName(e.target.value)} />
+                  <Input required placeholder="Phone Number" value={phone} onChange={(e) => setPhone(e.target.value)} />
+                  <Input placeholder="Email Address (optional)" type="email" value={email} onChange={(e) => setEmail(e.target.value)} />
                 </div>
               </div>
 
-              {/* Order Summary */}
-              <div className="md:col-span-1">
-                <div className="bg-white p-5 rounded-lg shadow-sm border sticky top-24">
-                  <h2 className="text-lg font-medium mb-4">Order Summary</h2>
+              {/* Delivery */}
+              <div className="bg-white p-5 rounded-lg shadow-sm border">
+                <h2 className="text-lg font-medium mb-4">Delivery Options</h2>
+                <RadioGroup value={deliveryMethod} onValueChange={(val) => setDeliveryMethod(val as DeliveryMethod)} className="mb-4 flex gap-4">
+                  <div className="flex items-center gap-2">
+                    <RadioGroupItem value="pickup" id="pickup" />
+                    <Label htmlFor="pickup">Pickup (Free)</Label>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <RadioGroupItem value="delivery" id="delivery" />
+                    <Label htmlFor="delivery">Delivery (Paid on arrival)</Label>
+                  </div>
+                </RadioGroup>
 
+                {deliveryMethod === "delivery" && (
+                  <div className="space-y-4">
+                    <Select value={deliveryZone} onValueChange={setDeliveryZone} required>
+                      <SelectTrigger>
+                        <SelectValue placeholder="Select delivery zone" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {deliveryZones.map((zone) => (
+                          <SelectItem key={zone.id} value={zone.id}>
+                            {zone.name} - {formatCurrency(zone.price)}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                    <Input
+                      placeholder="Detailed Address"
+                      required
+                      value={deliveryAddress}
+                      onChange={(e) => setDeliveryAddress(e.target.value)}
+                    />
+                  </div>
+                )}
+
+                {/* Scheduling */}
+                <div className="mt-4 space-y-2">
+                  <label className="flex items-center gap-2 text-sm font-medium">
+                    <input type="checkbox" id="scheduled" checked={isScheduled} onChange={() => setIsScheduled(!isScheduled)} />
+                    Schedule for later
+                  </label>
+                  {isScheduled && (
+                    <div className="grid grid-cols-2 gap-4">
+                      <Input type="date" value={scheduledDate} onChange={(e) => setScheduledDate(e.target.value)} required />
+                      <Input type="time" value={scheduledTime} onChange={(e) => setScheduledTime(e.target.value)} required />
+                    </div>
+                  )}
+                </div>
+              </div>
+            </div>
+
+            {/* Order Summary */}
+            <div className="md:col-span-1">
+              <div className="bg-white p-5 rounded-lg shadow-sm border sticky top-24">
+                <h2 className="text-lg font-medium mb-4">Order Summary</h2>
+                <div className="space-y-3 text-sm">
                   {items.map((item, index) => {
                     const quantity = item.quantity;
-                    const unitPrice =
-                      item.selectedPackage?.price || item.product.price;
-
+                    const unitPrice = item.selectedPackage?.price || item.product.price;
                     return (
                       <div
-                        key={`${item.product._id}-${
-                          item.selectedPackage?.id || "default"
-                        }-${index}`}
-                        className="flex justify-between mb-2 text-sm"
+                        key={`${item.product._id}-${item.selectedPackage?.id || "default"}-${index}`}
+                        className="flex justify-between"
                       >
                         <div>
                           {quantity}x {item.product.name}
-                          {item.selectedPackage &&
-                            ` (${item.selectedPackage.name})`}
+                          {item.selectedPackage && ` (${item.selectedPackage.name})`}
                         </div>
                         <div>{formatCurrency(unitPrice * quantity)}</div>
                       </div>
                     );
                   })}
-
-                  <hr className="my-3" />
-                  <div className="text-sm">
-                    <div className="flex justify-between">
-                      <span>Subtotal</span>
-                      <span>{formatCurrency(totalAmount)}</span>
-                    </div>
-                    <div className="flex justify-between">
-                      <span>Delivery</span>
-                      <span>
-                        {deliveryMethod === "pickup"
-                          ? "Free"
-                          : selectedZone
-                          ? formatCurrency(selectedZone.price)
-                          : "Select zone"}
-                      </span>
-                    </div>
-                    <div className="flex justify-between font-medium mt-2">
-                      <span>Total (Pay Now)</span>
-                      <span>{formatCurrency(totalAmount)}</span>
-                    </div>
-
-                    {deliveryMethod === "delivery" && selectedZone && (
-                      <div className="flex justify-between text-xs text-neutral-500 mt-1">
-                        <span>+ Delivery (Paid on arrival)</span>
-                        <span>{formatCurrency(selectedZone.price)}</span>
-                      </div>
-                    )}
-                  </div>
-
-                  <Button
-                    type="submit"
-                    className="w-full mt-4"
-                    disabled={isSubmitting}
-                  >
-                    {isSubmitting ? "Processing..." : "Pay & Place Order"}
-                  </Button>
                 </div>
+
+                <hr className="my-4" />
+                <div className="flex justify-between text-sm font-semibold">
+                  <span>Total:</span>
+                  <span>{formatCurrency(totalAmount)}</span>
+                </div>
+
+                <Button type="submit" className="w-full mt-6" disabled={isSubmitting}>
+                  {isSubmitting ? "Processing..." : "Pay Now"}
+                </Button>
               </div>
             </div>
           </form>
