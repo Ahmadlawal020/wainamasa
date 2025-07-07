@@ -217,7 +217,7 @@ export default function ProductModal({
               )}
 
               <div className="space-y-2">
-                <label className="text-sm font-medium">Package Quantity</label>
+                <label className="text-sm font-medium">How many</label>
                 <div className="flex items-center">
                   <Button
                     type="button"
@@ -252,7 +252,7 @@ export default function ProductModal({
 
               <div className="pt-2 border-t">
                 <div className="flex justify-between items-center">
-                  <span className="font-medium text-sm">Total:</span>
+                  <span className="font-medium text-sm">Price:</span>
                   <span className="text-lg font-bold text-green-500">
                     {formatCurrency(totalPrice)}
                   </span>
