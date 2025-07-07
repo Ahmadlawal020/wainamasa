@@ -1,4 +1,4 @@
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Onest:wght@400;500;600;700;800&display=swap');
 
 @tailwind base;
 @tailwind components;
@@ -89,7 +89,7 @@
 @layer base {
   * {
     @apply border-border;
-    font-family: 'Inter', sans-serif;
+    font-family: 'Onest', sans-serif;
   }
 
   body {
@@ -103,40 +103,40 @@
   }
 
   h1 {
-    font-size: clamp(2.5rem, 6vw, 4rem); /* 40px to 64px */
+    font-size: clamp(2.5rem, 6vw, 4rem);
     font-weight: 800;
   }
 
   h2 {
-    font-size: clamp(1.875rem, 4vw, 2.5rem); /* 30px to 40px */
+    font-size: clamp(1.875rem, 4vw, 2.5rem);
     font-weight: 700;
   }
 
   h3 {
-    font-size: clamp(1.5rem, 3vw, 2rem); /* 24px to 32px */
+    font-size: clamp(1.5rem, 3vw, 2rem);
     font-weight: 600;
   }
 
   p {
-    font-size: clamp(1rem, 2vw, 1.125rem); /* 16px to 18px */
+    font-size: clamp(1rem, 2vw, 1.125rem);
     line-height: 1.7;
     font-weight: 400;
   }
 
   .hero-heading {
-    font-size: clamp(3rem, 7vw, 5rem); /* 48px to 80px */
+    font-size: clamp(3rem, 7vw, 5rem);
     font-weight: 800;
     line-height: 1.1;
   }
 
   .hero-subtext {
-    font-size: clamp(1rem, 2vw, 1.25rem); /* 16px to 20px */
+    font-size: clamp(1rem, 2vw, 1.25rem);
     font-weight: 400;
     line-height: 1.6;
   }
 
   .section-heading {
-    font-size: clamp(1.75rem, 4vw, 2.25rem); /* 28px to 36px */
+    font-size: clamp(1.75rem, 4vw, 2.25rem);
     font-weight: 700;
   }
 
@@ -146,7 +146,7 @@
   }
 
   .menu-item-title {
-    font-size: clamp(1.125rem, 2.5vw, 1.25rem); /* 18px to 20px */
+    font-size: clamp(1.125rem, 2.5vw, 1.25rem);
     font-weight: 700;
   }
 
@@ -166,13 +166,11 @@
   }
 }
 
-/* Background pattern */
 .afro-pattern {
   background-color: #f8f8f8;
   background-image: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23f3801d' fill-opacity='0.2'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
 }
 
-/* Card UI */
 .food-card {
   @apply relative overflow-hidden rounded-xl transition-all duration-300;
 }
@@ -185,12 +183,10 @@
   @apply scale-105 transition-transform duration-300;
 }
 
-/* Button Hover Glow */
 .btn-glow:hover {
   box-shadow: 0 0 15px rgba(243, 128, 29, 0.5);
 }
 
-/* Category Button */
 .category-btn {
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }
@@ -199,7 +195,6 @@
   transform: translateY(-2px);
 }
 
-/* Animation */
 @keyframes slideUp {
   0% {
     opacity: 0;
