@@ -19,9 +19,9 @@ export default {
 		},
 		extend: {
 			fontFamily: {
-				sans: ['Instrument Sans', 'Inter', 'sans-serif'],
-				display: ['Instrument Sans', 'Inter', 'sans-serif'],
-				body: ['Instrument Sans', 'Inter', 'sans-serif'],
+				sans: ['Inter', 'sans-serif'],
+				display: ['Inter', 'sans-serif'],
+				body: ['Inter', 'sans-serif'],
 			},
 			colors: {
 				border: 'hsl(var(--border))',
