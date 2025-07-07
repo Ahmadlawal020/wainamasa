@@ -19,9 +19,9 @@ export default {
 		},
 		extend: {
 			fontFamily: {
-				sans: ['Inter', 'sans-serif'],
-				display: ['Inter', 'sans-serif'],
-				body: ['Inter', 'sans-serif'],
+				sans: ['Onest', 'sans-serif'],
+				display: ['Onest', 'sans-serif'],
+				body: ['Onest', 'sans-serif'],
 			},
 			colors: {
 				border: 'hsl(var(--border))',
@@ -73,7 +73,7 @@ export default {
 					200: '#F9BD8F',
 					300: '#F7A76A',
 					400: '#F59145',
-					500: '#F3801D', // Primary orange - Brand Color 1
+					500: '#F3801D',
 					600: '#E56C0F',
 					700: '#C25A0D',
 					800: '#9E480A',
@@ -85,7 +85,7 @@ export default {
 					200: '#C6E0BB',
 					300: '#B0D5A3',
 					400: '#9BCA8B',
-					500: '#5C9A2C', // Secondary green - Brand Color 2
+					500: '#5C9A2C',
 					600: '#538D28',
 					700: '#487A23',
 					800: '#3D671E',
