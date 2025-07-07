@@ -6,14 +6,18 @@ import { Button } from "@/components/ui/button";
 import { formatCurrency } from "@/lib/utils";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Link } from "react-router-dom";
-import { SheetHeader, SheetTitle, SheetClose } from "@/components/ui/sheet";
+import {
+  SheetHeader,
+  SheetTitle,
+  SheetClose,
+} from "@/components/ui/sheet";
 
 export default function CartSidebar() {
   const dispatch = useDispatch();
   const items = useSelector((state: RootState) => state.cart.items);
 
   const totalAmount = items.reduce((total, item) => {
-    const price = item.selectedPackage?.price;
+    const price = item.selectedPackage?.price ?? item.product.price;
     return total + price * item.quantity;
   }, 0);
 
@@ -23,15 +27,15 @@ export default function CartSidebar() {
         <SheetHeader className="px-6 py-4 border-b">
           <SheetTitle className="text-xl font-display">Your Cart</SheetTitle>
         </SheetHeader>
-        <div className="flex-1 flex flex-col items-center justify-center p-6">
-          <div className="text-center">
-            <ShoppingCartIcon className="mx-auto h-16 w-16 text-neutral-300 mb-4" />
-            <h3 className="text-xl font-medium mb-2">Your cart is empty</h3>
-            <p className="text-neutral-500 mb-6">
-              Add some items to get started!
+        <div className="flex-1 flex items-center justify-center px-6 py-10 text-center">
+          <div>
+            <ShoppingCartIcon className="mx-auto h-16 w-16 text-muted mb-4" />
+            <h3 className="text-lg font-semibold mb-1">Your cart is empty</h3>
+            <p className="text-sm text-muted-foreground mb-5">
+              Let’s fix that — start shopping!
             </p>
             <SheetClose asChild>
-              <Button asChild>
+              <Button asChild variant="default">
                 <Link to="/menu">Browse Menu</Link>
               </Button>
             </SheetClose>
@@ -47,31 +51,33 @@ export default function CartSidebar() {
         <SheetTitle className="text-xl font-display">Your Cart</SheetTitle>
       </SheetHeader>
 
-      <ScrollArea className="flex-1 p-6">
-        <div className="space-y-4">
+      <ScrollArea className="flex-1 px-4 py-6">
+        <div className="space-y-5">
           {items.map((item, index) => {
             const packageId = item.selectedPackage?.id;
-            const itemPrice = item.selectedPackage?.price || item.product.price;
+            const itemPrice = item.selectedPackage?.price ?? item.product.price;
 
             return (
               <div
                 key={`${item.product._id}-${packageId || index}`}
-                className="flex items-start space-x-4 pb-4 border-b"
+                className="flex items-start gap-4 pb-4 border-b last:border-none"
               >
-                <div className="bg-neutral-100 rounded-md w-20 h-20 flex-shrink-0">
+                <div className="bg-neutral-100 rounded-md w-20 h-20 overflow-hidden">
                   <img
                     src={item.product.image}
                     alt={item.product.product}
-                    className="w-full h-full object-cover rounded-md"
+                    className="object-cover w-full h-full"
                   />
                 </div>
 
                 <div className="flex-1">
-                  <div className="flex justify-between">
+                  <div className="flex justify-between items-start mb-1">
                     <div>
-                      <h4 className="font-medium">{item.product.product}</h4>
+                      <h4 className="font-semibold text-sm leading-tight">
+                        {item.product.product}
+                      </h4>
                       {item.selectedPackage && (
-                        <p className="text-xs text-brand-500 font-medium">
+                        <p className="text-xs text-brand-600 font-medium">
                           {item.selectedPackage.name}
                         </p>
                       )}
@@ -83,27 +89,27 @@ export default function CartSidebar() {
                         dispatch(
                           removeFromCart({
                             productId: item.product._id,
-                            packageId: packageId,
+                            packageId,
                           })
                         )
                       }
                     >
-                      <Trash2 className="h-4 w-4 text-neutral-500" />
+                      <Trash2 className="h-4 w-4 text-muted" />
                     </Button>
                   </div>
 
-                  <p className="text-sm text-neutral-500 mb-2 line-clamp-1">
+                  <p className="text-xs text-muted-foreground mb-2 line-clamp-2">
                     {item.selectedPackage?.description ||
                       item.notes ||
                       item.product.description}
                   </p>
 
                   <div className="flex justify-between items-center">
-                    <div className="flex items-center border rounded-md">
+                    <div className="flex border rounded-md overflow-hidden">
                       <Button
                         variant="ghost"
                         size="icon"
-                        className="h-8 w-8 rounded-r-none"
+                        className="h-8 w-8"
                         onClick={() =>
                           dispatch(
                             updateQuantity({
@@ -115,13 +121,15 @@ export default function CartSidebar() {
                         }
                         disabled={item.quantity <= 1}
                       >
-                        <span className="text-lg font-medium">-</span>
+                        <span className="text-lg">−</span>
                       </Button>
-                      <span className="w-8 text-center">{item.quantity}</span>
+                      <span className="w-8 flex items-center justify-center text-sm">
+                        {item.quantity}
+                      </span>
                       <Button
                         variant="ghost"
                         size="icon"
-                        className="h-8 w-8 rounded-l-none"
+                        className="h-8 w-8"
                         onClick={() =>
                           dispatch(
                             updateQuantity({
@@ -132,10 +140,10 @@ export default function CartSidebar() {
                           )
                         }
                       >
-                        <span className="text-lg font-medium">+</span>
+                        <span className="text-lg">+</span>
                       </Button>
                     </div>
-                    <span className="font-medium">
+                    <span className="text-sm font-medium">
                       {formatCurrency(itemPrice * item.quantity)}
                     </span>
                   </div>
@@ -146,16 +154,16 @@ export default function CartSidebar() {
         </div>
       </ScrollArea>
 
-      <div className="p-6 border-t">
-        <div className="flex justify-between mb-4">
-          <span className="font-medium">Subtotal</span>
-          <span className="font-medium">{formatCurrency(totalAmount)}</span>
+      <div className="px-6 py-5 border-t bg-white">
+        <div className="flex justify-between text-sm font-medium mb-2">
+          <span>Subtotal</span>
+          <span>{formatCurrency(totalAmount)}</span>
         </div>
-        <p className="text-xs text-neutral-500 mb-4">
-          Delivery charges will be calculated at checkout
+        <p className="text-xs text-muted-foreground mb-4">
+          Delivery charges will be calculated at checkout.
         </p>
         <SheetClose asChild>
-          <Button asChild className="w-full">
+          <Button asChild className="w-full text-sm h-11">
             <Link to="/checkout" className="flex items-center justify-center">
               Proceed to Checkout
               <ChevronRight className="ml-2 h-4 w-4" />
@@ -167,7 +175,6 @@ export default function CartSidebar() {
   );
 }
 
-// Local icon for empty cart state
 function ShoppingCartIcon(props: React.SVGProps<SVGSVGElement>) {
   return (
     <svg
