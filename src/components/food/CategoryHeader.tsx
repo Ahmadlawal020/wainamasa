@@ -1,4 +1,4 @@
-import { useState } from "react";
+urimport { useState } from "react";
 import {
   Utensils,
   Soup,
@@ -23,13 +23,13 @@ export default function CategoryHeader({
   const [activeCategory, setActiveCategory] = useState("all");
 
   const categories: Category[] = [
-    { id: "all", label: "All Items", icon: Utensils },
-    { id: "masa", label: "Masa", icon: Package },
-    { id: "meat", label: "Meat", icon: Utensils },
-    { id: "soups", label: "Soups", icon: Soup },
-    { id: "drinks", label: "Drinks", icon: Coffee },
-    { id: "comboDeals", label: "Combo Deals", icon: Box },
-    { id: "extras", label: "Extras", icon: ShoppingBag },
+    { id: "All", label: "Featured", icon: Utensils },
+    { id: "Combo", label: "Combo Deals", icon: Box },
+    { id: "Masa", label: "Masa", icon: Package },
+    { id: "Meat", label: "Meat", icon: Utensils },
+    { id: "Soups", label: "Soups", icon: Soup },
+    { id: "Drinks", label: "Drinks", icon: Coffee },
+    { id: "Extras", label: "Extras", icon: ShoppingBag },
   ];
 
   const handleCategoryChange = (categoryId: string) => {
