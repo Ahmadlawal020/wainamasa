@@ -24,7 +24,7 @@ export default function Hero() {
 
           {/* Image Side */}
           <div className="relative order-first lg:order-last">
-            <div className="aspect-square max-w-md mx-auto lg:max-w-lg xl:max-w-xl overflow-hidden rounded-2xl border-4 border-white shadow-xl">
+            <div className="aspect-square max-w-md ml-auto lg:max-w-lg xl:max-w-xl overflow-hidden rounded-2xl border-4 border-white shadow-xl">
               <img
                 src="/lovable-uploads/0295da10-95ad-463e-89b7-30356b9c7617.png"
                 alt="Plate of authentic homemade Masa with soup and garnish"
