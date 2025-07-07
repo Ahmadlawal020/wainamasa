@@ -29,9 +29,6 @@ import SettingsPage from "./pages/admin/SettingsPage";
 import CategoriesPage from "./pages/admin/CategoriesPage";
 import NewCategory from "./pages/admin/NewCategory";
 import EditCategory from "./pages/admin/EditCategory";
-<div style={{ fontFamily: 'Onest, sans-serif', fontSize: '24px' }}>
-  This text should look different (Onest font).
-</div>
 
 const queryClient = new QueryClient({
   defaultOptions: {
