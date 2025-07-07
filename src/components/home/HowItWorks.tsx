@@ -23,7 +23,7 @@ export default function HowItWorks() {
     <section className="py-16 bg-neutral-50">
       <div className="container mx-auto px-4">
         <div className="text-center mb-10">
-          <h2 className="font-bold text-3xl mb-3 tracking-tight leading-tight text-green-600">How It Works</h2>
+          <h2 className="font-bold text-3xl mb-3 tracking-tight leading-tight text-green-600">How to Order</h2>
           <p className="text-base text-neutral-600 max-w-xl mx-auto">
             Getting real, delicious food has never been this easy. From our kitchen to your table — fast, fresh, and fuss-free.
           </p>
