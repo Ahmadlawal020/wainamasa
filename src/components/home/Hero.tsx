@@ -20,9 +20,6 @@ export default function Hero() {
             <p className="text-base md:text-lg text-neutral-700 leading-relaxed mb-6 md:mb-8 max-w-2xl">
               Experience the comfort of real, home-cooked meals — freshly made, expertly packed, and delivered with heart. No stress, just good food done right.
             </p>
-            <Button asChild size="lg" className="bg-green-600 hover:bg-green-700 text-white rounded-xl shadow-md transition-all">
-              <Link to="/menu">Order Now</Link>
-            </Button>
           </div>
 
           {/* Image Side */}
