@@ -15,12 +15,20 @@ export default function Footer() {
               Prepared with heritage, heart, and the finest ingredients.
             </p>
             <div className="flex gap-4">
-              <a href="https://instagram.com/masa_treat" target="_blank" rel="noopener noreferrer"
-                className="p-2 rounded-full bg-neutral-800 hover:bg-green-400 transition-colors">
+              <a
+                href="https://instagram.com/masa_treat"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="p-2 rounded-full bg-neutral-800 hover:bg-green-400 transition-colors"
+              >
                 <Instagram className="h-5 w-5 text-white" />
               </a>
-              <a href="https://facebook.com/masatreat" target="_blank" rel="noopener noreferrer"
-                className="p-2 rounded-full bg-neutral-800 hover:bg-green-400 transition-colors">
+              <a
+                href="https://facebook.com/masatreat"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="p-2 rounded-full bg-neutral-800 hover:bg-green-400 transition-colors"
+              >
                 <Facebook className="h-5 w-5 text-white" />
               </a>
             </div>
@@ -60,7 +68,17 @@ export default function Footer() {
         {/* Bottom Strip */}
         <div className="border-t border-neutral-800 mt-12 pt-6 flex flex-col md:flex-row justify-between items-center text-sm text-neutral-500">
           <p>&copy; {new Date().getFullYear()} Masa Treat. All rights reserved.</p>
-          <p className="mt-3 md:mt-0">Crafted with ❤️ by <a href="https://sableboxx.com" target="_blank" rel="noopener noreferrer" className="hover:text-green-400">Sableboxx</a></p>
+          <p className="mt-3 md:mt-0">
+            Crafted with ❤️ by{" "}
+            <a
+              href="https://sableboxx.com"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="hover:text-green-400"
+            >
+              Sableboxx
+            </a>
+          </p>
         </div>
       </div>
     </footer>
