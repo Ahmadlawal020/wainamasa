@@ -10,7 +10,7 @@ export default function Footer() {
           {/* Logo + Description */}
           <div className="md:col-span-2">
             <h3 className="text-2xl font-bold mb-4 text-green-400">Masa Treat</h3>
-            <p className="text-neutral-400 text-base leading-relaxed mb-6 max-w-md">
+            <p className="text-sm text-neutral-400 leading-relaxed mb-6 max-w-md">
               Bringing Northern Nigeria’s rich flavors to your table — one masa at a time.
               Prepared with heritage, heart, and the finest ingredients.
             </p>
@@ -36,21 +36,21 @@ export default function Footer() {
 
           {/* Opening Hours */}
           <div>
-            <h4 className="text-lg font-semibold mb-4 text-green-400">Opening Hours</h4>
+            <h4 className="text-base font-bold mb-4 text-green-400">Opening Hours</h4>
             <ul className="space-y-2 text-sm text-neutral-300">
               <li className="flex justify-between">
                 <span>Every Day</span>
                 <span>8:00 AM - 6:00 PM</span>
               </li>
             </ul>
-            <p className="mt-3 text-xs text-neutral-500">
+            <p className="mt-3 text-sm text-neutral-500">
               Kindly note: Orders can only be placed within these hours.
             </p>
           </div>
 
           {/* Contact Info */}
           <div>
-            <h4 className="text-lg font-semibold mb-4 text-green-400">Contact Us</h4>
+            <h4 className="text-base font-bold mb-4 text-green-400">Contact Us</h4>
             <address className="not-italic text-sm text-neutral-300 space-y-3">
               <p className="flex items-start">
                 <MapPin className="h-4 w-4 mr-2 text-green-400 mt-0.5" />
