@@ -2,7 +2,7 @@ import { useState, useMemo } from "react";
 import Hero from "@/components/home/Hero";
 import ProductCard from "@/components/food/ProductCard";
 import HowItWorks from "@/components/home/HowItWorks";
-import ValueProposition from "@/components/home/ValueProposition";
+// import ValueProposition from "@/components/home/ValueProposition";
 import Header from "@/components/layout/Header";
 import Footer from "@/components/layout/Footer";
 import CategoryHeader from "@/components/food/CategoryHeader";
@@ -71,7 +71,7 @@ export default function Index() {
         </section>
 
         <HowItWorks />
-        <ValueProposition />
+{/*         <ValueProposition /> */}
       </main>
       <Footer />
     </>
