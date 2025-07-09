@@ -1,14 +1,21 @@
 'use client';
 
-import { useState } from 'react';
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogClose } from '@/components/ui/dialog';
+import { useEffect, useState } from 'react';
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogDescription,
+  DialogClose
+} from '@/components/ui/dialog';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { AspectRatio } from '@/components/ui/aspect-ratio';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { ChevronUp, ChevronDown, ShoppingCartIcon } from 'lucide-react';
-import { formatCurrency } from '@/lib/utils'; // update this path as needed
+import { formatCurrency } from '@/lib/utils';
 
 interface ProductOption {
   id: string;
@@ -28,20 +35,30 @@ interface Product {
 }
 
 interface ProductModalProps {
-  product: Product;
+  product: Product | null;
+  isOpen: boolean;
   onClose: () => void;
 }
 
-export default function ProductModal({ product, onClose }: ProductModalProps) {
-  const [selectedPackage, setSelectedPackage] = useState<ProductOption | undefined>(
-    product.packageOptions?.[0]
-  );
+export default function ProductModal({ product, isOpen, onClose }: ProductModalProps) {
+  const [selectedPackage, setSelectedPackage] = useState<ProductOption | undefined>();
   const [quantity, setQuantity] = useState(1);
   const [customQuantity, setCustomQuantity] = useState(10);
   const minOrder = 10;
 
-  const isCustomOrder = selectedPackage?.id === 'custom';
+  useEffect(() => {
+    if (product?.packageOptions?.length) {
+      setSelectedPackage(product.packageOptions[0]);
+    } else {
+      setSelectedPackage(undefined);
+    }
+    setQuantity(1);
+    setCustomQuantity(minOrder);
+  }, [product]);
 
+  if (!product) return null;
+
+  const isCustomOrder = selectedPackage?.id === 'custom';
   const totalPrice = isCustomOrder
     ? customQuantity * product.price
     : (selectedPackage?.price || product.price) * quantity;
@@ -57,16 +74,15 @@ export default function ProductModal({ product, onClose }: ProductModalProps) {
   };
 
   const handleAddToCart = () => {
-    // logic to add to cart
+    // your add-to-cart logic here
     onClose();
   };
 
   return (
-    <Dialog open onOpenChange={onClose}>
+    <Dialog open={isOpen} onOpenChange={(open) => !open && onClose()}>
       <DialogContent className="sm:max-w-md w-full overflow-hidden rounded-xl p-0">
         <ScrollArea className="max-h-[90vh]">
           <div className="flex flex-col">
-            {/* Product Image */}
             <AspectRatio ratio={16 / 9} className="bg-muted">
               <img
                 src={product.image}
@@ -76,7 +92,6 @@ export default function ProductModal({ product, onClose }: ProductModalProps) {
             </AspectRatio>
 
             <div className="px-4 py-5 sm:p-6 space-y-4 text-sm">
-              {/* Header */}
               <DialogHeader className="mb-1">
                 <div className="flex justify-between items-start">
                   <div>
@@ -92,23 +107,19 @@ export default function ProductModal({ product, onClose }: ProductModalProps) {
                 </div>
               </DialogHeader>
 
-              {/* Description */}
               {product.description && (
                 <p className="text-xs text-neutral-700 leading-snug">
                   {product.description}
                 </p>
               )}
 
-              {/* Package Options */}
               {product.hasPackageOptions && product.packageOptions?.length > 0 && (
                 <div className="space-y-2">
                   <label className="text-xs font-medium">Choose Package</label>
                   <RadioGroup
                     value={selectedPackage?.id}
                     onValueChange={(id) =>
-                      setSelectedPackage(
-                        product.packageOptions?.find((p) => p.id === id)
-                      )
+                      setSelectedPackage(product.packageOptions?.find((p) => p.id === id))
                     }
                     className="flex flex-col gap-2"
                   >
@@ -144,7 +155,6 @@ export default function ProductModal({ product, onClose }: ProductModalProps) {
                 </div>
               )}
 
-              {/* Custom Quantity Input */}
               {isCustomOrder && (
                 <div className="pt-3 border-t border-dashed space-y-1.5">
                   <label className="text-xs font-medium">
@@ -186,7 +196,6 @@ export default function ProductModal({ product, onClose }: ProductModalProps) {
                 </div>
               )}
 
-              {/* Quantity Selector */}
               <div className="space-y-1.5">
                 <label className="text-xs font-medium">How many</label>
                 <div className="flex items-center">
@@ -221,7 +230,6 @@ export default function ProductModal({ product, onClose }: ProductModalProps) {
                 </div>
               </div>
 
-              {/* Total Price */}
               <div className="pt-3 border-t">
                 <div className="flex justify-between text-sm font-medium">
                   <span>Total</span>
@@ -231,7 +239,6 @@ export default function ProductModal({ product, onClose }: ProductModalProps) {
                 </div>
               </div>
 
-              {/* Actions */}
               <div className="flex justify-between items-center pt-3 gap-2">
                 <DialogClose asChild>
                   <Button variant="outline" size="sm" className="w-full">
