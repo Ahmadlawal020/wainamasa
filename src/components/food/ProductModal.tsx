@@ -19,7 +19,6 @@ import {
 } from "@/components/ui/dialog";
 import { AspectRatio } from "@/components/ui/aspect-ratio";
 import { ScrollArea } from "@/components/ui/scroll-area";
-
 import { useDispatch } from "react-redux";
 import { addToCart } from "../../services/cartSlice";
 
@@ -82,7 +81,7 @@ export default function ProductModal({
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="sm:max-w-[520px] p-0 overflow-hidden rounded-xl max-h-[90vh]">
+      <DialogContent className="sm:max-w-md w-full p-0 overflow-hidden rounded-xl max-h-[90vh]">
         <ScrollArea className="max-h-[90vh]">
           <div className="flex flex-col">
             {/* Product Image */}
@@ -94,14 +93,15 @@ export default function ProductModal({
               />
             </AspectRatio>
 
-            <div className="p-6 space-y-5">
+            <div className="p-4 sm:p-6 space-y-5">
+              {/* Header */}
               <DialogHeader>
                 <div className="flex justify-between items-start">
                   <div>
-                    <DialogTitle className="text-2xl font-semibold">
+                    <DialogTitle className="text-lg sm:text-2xl font-semibold">
                       {product.product}
                     </DialogTitle>
-                    <DialogDescription className="text-brand-600 font-medium mt-1">
+                    <DialogDescription className="text-brand-600 font-medium mt-1 text-sm sm:text-base">
                       {product.hasPackageOptions
                         ? `From ${formatCurrency(product.price)}`
                         : formatCurrency(product.price)}
@@ -110,6 +110,7 @@ export default function ProductModal({
                 </div>
               </DialogHeader>
 
+              {/* Description */}
               {product.description && (
                 <p className="text-sm text-neutral-700 leading-relaxed">
                   {product.description}
@@ -249,16 +250,16 @@ export default function ProductModal({
               </div>
 
               {/* Actions */}
-              <div className="flex justify-between items-center pt-4">
+              <div className="flex justify-between items-center pt-4 gap-2">
                 <DialogClose asChild>
-                  <Button variant="outline" size="sm">
+                  <Button variant="outline" size="sm" className="w-full">
                     Cancel
                   </Button>
                 </DialogClose>
                 <Button
                   onClick={handleAddToCart}
                   size="sm"
-                  className="bg-green-600 hover:bg-green-700 text-white"
+                  className="w-full bg-green-600 hover:bg-green-700 text-white"
                 >
                   Add to Cart <ShoppingCartIcon className="ml-2 w-4 h-4" />
                 </Button>
