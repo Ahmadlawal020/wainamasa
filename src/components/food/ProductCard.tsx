@@ -10,9 +10,9 @@ interface ProductCardProps {
 }
 
 import ProductCard from "@/components/ProductCard";
-import { products } from "@/data/mockProducts"; // Replace with your actual data
+import { products } from "@/data/products";
 
-export default function MenuPage() {
+export default function ProductsPage() {
   return (
     <div className="px-4 py-6">
       <div className="grid grid-cols-2 gap-4 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
