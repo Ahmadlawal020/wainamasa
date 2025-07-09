@@ -1,3 +1,7 @@
+// components/ProductCard.tsx
+
+"use client"; // if you're using Next.js App Router
+
 import { useState } from "react";
 import { Product } from "@/data/types";
 import { Button } from "@/components/ui/button";
@@ -7,21 +11,6 @@ import ProductModal from "./ProductModal";
 
 interface ProductCardProps {
   product: Product;
-}
-
-import ProductCard from "@/components/ProductCard";
-import { products } from "@/data/products";
-
-export default function ProductsPage() {
-  return (
-    <div className="px-4 py-6">
-      <div className="grid grid-cols-2 gap-4 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
-        {products.map((product) => (
-          <ProductCard key={product.id} product={product} />
-        ))}
-      </div>
-    </div>
-  );
 }
 
 export default function ProductCard({ product }: ProductCardProps) {
