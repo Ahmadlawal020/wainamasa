@@ -1,151 +1,159 @@
-"use client";
-
-import { useAppSelector, useAppDispatch } from "@/lib/redux/hooks";
-import {
-  removeFromCart,
-  updateQuantity,
-} from "@/lib/redux/features/cart/cartSlice";
-import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from "@/components/ui/sheet";
+import { Trash2, ChevronRight } from "lucide-react";
+import { useSelector, useDispatch } from "react-redux";
+import { RootState } from "../../app/store";
+import { removeFromCart, updateQuantity } from "../../services/cartSlice";
 import { Button } from "@/components/ui/button";
+import { formatCurrency } from "@/lib/utils";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import { Trash2, ShoppingCart } from "lucide-react";
-import Image from "next/image";
-import Link from "next/link";
-
-export function formatCurrency(amount: number): string {
-  return `₦${amount.toLocaleString("en-NG")}`;
-}
+import { Link } from "react-router-dom";
+import { SheetHeader, SheetTitle, SheetClose } from "@/components/ui/sheet";
+import { ShoppingCartIcon } from "lucide-react";
 
 export default function CartSidebar() {
-  const dispatch = useAppDispatch();
-  const { items } = useAppSelector((state) => state.cart);
+  const dispatch = useDispatch();
+  const items = useSelector((state: RootState) => state.cart.items);
 
-  const totalAmount = items.reduce((acc, item) => {
+  const totalAmount = items.reduce((total, item) => {
     const price = item.selectedPackage?.price || item.product.price;
-    return acc + price * item.quantity;
+    return total + price * item.quantity;
   }, 0);
 
-  return (
-    <Sheet>
-      <SheetTrigger asChild>
-        <Button variant="ghost" className="relative p-2">
-          <ShoppingCart className="h-6 w-6" />
-          {items.length > 0 && (
-            <span className="absolute top-0 right-0 bg-red-600 text-white text-xs rounded-full px-1.5">
-              {items.length}
-            </span>
-          )}
-        </Button>
-      </SheetTrigger>
-
-      <SheetContent side="right" className="w-full sm:w-[90vw] md:w-[500px] p-0 flex flex-col">
-        <SheetHeader className="border-b px-4 py-3">
-          <SheetTitle className="text-lg md:text-xl font-semibold font-display">
-            Your Cart
-          </SheetTitle>
+  if (items.length === 0) {
+    return (
+      <div className="h-full flex flex-col">
+        <SheetHeader className="px-4 py-3 border-b md:px-6 md:py-4">
+          <SheetTitle className="text-lg md:text-xl font-semibold font-display">Your Cart</SheetTitle>
         </SheetHeader>
-
-        {items.length === 0 ? (
-          <div className="flex flex-col items-center justify-center h-full text-center px-6 py-10">
-            <ShoppingCart className="h-12 w-12 text-muted-foreground mb-4" />
-            <p className="text-neutral-500 mb-4">
-              Your cart is currently empty.
-            </p>
-            <Link href="/shop">
-              <Button className="mt-2">Start Shopping</Button>
-            </Link>
+        <div className="flex-1 flex flex-col items-center justify-center p-6">
+          <div className="text-center">
+            <ShoppingCartIcon className="mx-auto h-16 w-16 text-neutral-300 mb-4" />
+            <h3 className="text-xl font-medium mb-2">Your cart is empty</h3>
+            <p className="text-neutral-500 mb-6">Add some items to get started!</p>
+            <SheetClose asChild>
+              <Button asChild>
+                <Link to="/menu">Browse Menu</Link>
+              </Button>
+            </SheetClose>
           </div>
-        ) : (
-          <>
-            <ScrollArea className="flex-1 px-4 py-4">
-              {items.map((item, index) => {
-                const packageId = item.selectedPackage?._id;
-                const itemPrice = (item.selectedPackage?.price || item.product.price) * item.quantity;
+        </div>
+      </div>
+    );
+  }
 
-                return (
-                  <div key={`${item.product._id}-${packageId || index}`} className="flex gap-4 mb-6 border-b pb-4">
-                    <Image
-                      src={item.product.image}
-                      alt={item.product.name}
-                      width={80}
-                      height={80}
-                      className="rounded-md object-cover w-20 h-20"
-                    />
+  return (
+    <div className="h-full flex flex-col">
+      <SheetHeader className="px-4 py-3 border-b md:px-6 md:py-4">
+        <SheetTitle className="text-lg md:text-xl font-semibold font-display">Your Cart</SheetTitle>
+      </SheetHeader>
 
-                    <div className="flex-1">
-                      <div className="flex justify-between items-start mb-2">
-                        <div>
-                          <h3 className="font-semibold text-base">{item.product.name}</h3>
-                          {item.selectedPackage && (
-                            <p className="text-sm text-muted-foreground">
-                              {item.selectedPackage.name}
-                            </p>
-                          )}
-                        </div>
-                        <button
-                          onClick={() =>
-                            dispatch(removeFromCart({ productId: item.product._id, packageId }))
-                          }
-                          aria-label="Remove item"
-                          className="text-red-600 hover:text-red-700"
-                        >
-                          <Trash2 className="w-4 h-4" />
-                        </button>
-                      </div>
+      <ScrollArea className="flex-1 px-4 py-4 md:px-6">
+        <div className="space-y-4">
+          {items.map((item, index) => {
+            const packageId = item.selectedPackage?.id;
+            const itemPrice = item.selectedPackage?.price || item.product.price;
 
-                      <div className="flex justify-between items-center text-sm mt-1">
-                        <span className="text-muted-foreground">Qty:</span>
-                        <div className="flex items-center gap-2">
-                          <Button
-                            size="sm"
-                            variant="outline"
-                            onClick={() =>
-                              dispatch(updateQuantity({
-                                productId: item.product._id,
-                                packageId,
-                                quantity: item.quantity - 1,
-                              }))
-                            }
-                            disabled={item.quantity <= 1}
-                          >-</Button>
+            return (
+              <div
+                key={`${item.product._id}-${packageId || index}`}
+                className="flex flex-col sm:flex-row sm:items-start sm:space-x-4 space-y-3 sm:space-y-0 pb-4 border-b"
+              >
+                <div className="bg-neutral-100 rounded-lg w-full sm:w-20 h-36 sm:h-20 overflow-hidden">
+                  <img
+                    src={item.product.image}
+                    alt={item.product.product}
+                    className="w-full h-full object-cover"
+                  />
+                </div>
 
-                          <span className="font-medium">{item.quantity}</span>
-
-                          <Button
-                            size="sm"
-                            variant="outline"
-                            onClick={() =>
-                              dispatch(updateQuantity({
-                                productId: item.product._id,
-                                packageId,
-                                quantity: item.quantity + 1,
-                              }))
-                            }
-                          >+</Button>
-                        </div>
-                      </div>
-
-                      <p className="text-right text-sm mt-2 font-medium">
-                        {formatCurrency(itemPrice)}
-                      </p>
+                <div className="flex-1 space-y-2">
+                  <div className="flex justify-between items-start">
+                    <div className="space-y-1">
+                      <h4 className="font-semibold text-sm sm:text-base">{item.product.product}</h4>
+                      {item.selectedPackage && (
+                        <p className="text-xs text-brand-500 font-medium">{item.selectedPackage.name}</p>
+                      )}
                     </div>
+                    <Button
+                      variant="ghost"
+                      size="icon"
+                      className="text-neutral-500"
+                      onClick={() =>
+                        dispatch(removeFromCart({ productId: item.product._id, packageId }))
+                      }
+                    >
+                      <Trash2 className="h-4 w-4" />
+                    </Button>
                   </div>
-                );
-              })}
-            </ScrollArea>
 
-            <div className="border-t px-4 py-4">
-              <div className="flex justify-between mb-4 text-base font-medium">
-                <span>Total</span>
-                <span>{formatCurrency(totalAmount)}</span>
+                  <p className="text-sm text-neutral-500 line-clamp-2">
+                    {item.selectedPackage?.description || item.notes || item.product.description}
+                  </p>
+
+                  <div className="flex justify-between items-center mt-2">
+                    <div className="flex items-center border rounded-md overflow-hidden">
+                      <Button
+                        variant="ghost"
+                        size="icon"
+                        className="h-8 w-8"
+                        onClick={() =>
+                          dispatch(
+                            updateQuantity({
+                              productId: item.product._id,
+                              packageId,
+                              quantity: item.quantity - 1,
+                            })
+                          )
+                        }
+                        disabled={item.quantity <= 1}
+                      >
+                        <span className="text-base">−</span>
+                      </Button>
+                      <span className="w-8 text-center text-sm">{item.quantity}</span>
+                      <Button
+                        variant="ghost"
+                        size="icon"
+                        className="h-8 w-8"
+                        onClick={() =>
+                          dispatch(
+                            updateQuantity({
+                              productId: item.product._id,
+                              packageId,
+                              quantity: item.quantity + 1,
+                            })
+                          )
+                        }
+                      >
+                        <span className="text-base">+</span>
+                      </Button>
+                    </div>
+                    <span className="font-semibold text-sm">
+                      {formatCurrency(itemPrice * item.quantity)}
+                    </span>
+                  </div>
+                </div>
               </div>
-              <Link href="/checkout">
-                <Button className="w-full">Proceed to Checkout</Button>
-              </Link>
-            </div>
-          </>
-        )}
-      </SheetContent>
-    </Sheet>
+            );
+          })}
+        </div>
+      </ScrollArea>
+
+      <div className="p-4 md:p-6 border-t">
+        <div className="flex justify-between mb-3 text-sm md:text-base">
+          <span className="font-medium">Subtotal</span>
+          <span className="font-medium">{formatCurrency(totalAmount)}</span>
+        </div>
+        <p className="text-xs text-neutral-500 mb-4">
+          Delivery charges calculated at checkout
+        </p>
+        <SheetClose asChild>
+          <Button asChild className="w-full py-3 text-sm md:text-base">
+            <Link to="/checkout" className="flex items-center justify-center gap-1">
+              Proceed to Checkout
+              <ChevronRight className="h-4 w-4" />
+            </Link>
+          </Button>
+        </SheetClose>
+      </div>
+    </div>
   );
 }
