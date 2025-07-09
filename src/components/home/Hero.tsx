@@ -1,5 +1,4 @@
 import { Link } from "react-router-dom";
-import { Button } from "@/components/ui/button";
 
 export default function Hero() {
   return (
@@ -11,11 +10,22 @@ export default function Hero() {
 
       {/* Content Container */}
       <div className="container mx-auto px-4 relative">
-        <div className="grid grid-cols-1 lg:grid-cols-2 items-center gap-10">
+        <div className="flex flex-col-reverse sm:flex-row items-center sm:justify-between gap-8 sm:gap-12">
           
-          {/* Image First on Mobile */}
-          <div className="relative mb-8 lg:mb-0 order-first lg:order-last">
-            <div className="aspect-square w-full max-w-[320px] mx-auto overflow-hidden rounded-2xl border-4 border-white shadow-xl">
+          {/* Text Side */}
+          <div className="w-full sm:w-1/2 text-left">
+            <h1 className="text-4xl sm:text-5xl md:text-6xl font-bold text-neutral-900 mb-4 leading-tight tracking-[-0.02em]">
+              Deliciously <span className="text-green-600">Homemade</span>.<br />
+              Delivered to Your Door.
+            </h1>
+            <p className="text-base md:text-lg text-neutral-700 leading-relaxed max-w-md">
+              Experience the comfort of real, home-cooked meals — freshly made, expertly packed, and delivered with heart. No stress, just good food done right.
+            </p>
+          </div>
+
+          {/* Image Side */}
+          <div className="w-full sm:w-1/2 relative flex justify-end">
+            <div className="w-[90%] max-w-sm sm:max-w-md md:max-w-lg rounded-2xl border-4 border-white shadow-xl overflow-hidden">
               <img
                 src="/lovable-uploads/0295da10-95ad-463e-89b7-30356b9c7617.png"
                 alt="Plate of authentic homemade Masa with soup and garnish"
@@ -24,7 +34,7 @@ export default function Hero() {
             </div>
 
             {/* Open Hours Badge */}
-            <div className="absolute -bottom-4 left-1/2 -translate-x-1/2 bg-white shadow-md rounded-md p-3 w-[180px] rotate-1">
+            <div className="absolute -bottom-4 left-0 bg-white shadow-md rounded-md p-3 w-[170px] rotate-1">
               <div className="flex items-center">
                 <div className="bg-green-100 p-1.5 rounded-full mr-3">
                   <div className="bg-green-500 text-white h-8 w-8 rounded-full flex items-center justify-center text-sm font-semibold">
@@ -39,17 +49,6 @@ export default function Hero() {
             </div>
           </div>
 
-          {/* Text Side */}
-          <div className="text-center lg:text-left">
-            <h1 className="text-4xl sm:text-5xl font-bold text-neutral-900 mb-4 leading-tight tracking-[-0.02em]">
-              Deliciously <span className="text-green-600">Homemade</span>. <br className="sm:hidden" />
-              Delivered to Your Door.
-            </h1>
-            <p className="text-sm sm:text-base text-neutral-700 leading-relaxed max-w-lg mx-auto lg:mx-0 mb-6">
-              Experience the comfort of real, home-cooked meals — freshly made, expertly packed, and delivered with heart. No stress, just good food done right.
-            </p>
-            <Button className="bg-green-600 text-white hover:bg-green-700 transition">Order Now</Button>
-          </div>
         </div>
       </div>
     </div>
