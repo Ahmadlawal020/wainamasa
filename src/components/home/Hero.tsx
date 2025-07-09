@@ -25,7 +25,7 @@ export default function Hero() {
 
           {/* Image Side */}
           <div className="w-full sm:w-1/2 relative flex justify-end">
-            <div className="w-[90%] max-w-sm sm:max-w-md md:max-w-lg rounded-2xl border-4 border-white shadow-xl overflow-hidden">
+            <div className="w-[100%] max-w-sm sm:max-w-md md:max-w-lg rounded-2xl border-4 border-white shadow-xl overflow-hidden">
               <img
                 src="/lovable-uploads/0295da10-95ad-463e-89b7-30356b9c7617.png"
                 alt="Plate of authentic homemade Masa with soup and garnish"
@@ -33,8 +33,8 @@ export default function Hero() {
               />
             </div>
 
-            {/* Open Hours Badge */}
-            <div className="absolute -bottom-4 left-0 bg-white shadow-md rounded-md p-3 w-[170px] rotate-1">
+          {/* Open Hours Badge */}
+            <div className="absolute -bottom-4 left-1/2 -translate-x-1/2 bg-white shadow-md rounded-md p-3 w-[180px] rotate-1">
               <div className="flex items-center">
                 <div className="bg-green-100 p-1.5 rounded-full mr-3">
                   <div className="bg-green-500 text-white h-8 w-8 rounded-full flex items-center justify-center text-sm font-semibold">
