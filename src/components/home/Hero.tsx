@@ -10,11 +10,11 @@ export default function Hero() {
 
       {/* Content Container */}
       <div className="container mx-auto px-4 relative">
-        <div className="flex flex-col-reverse sm:flex-row items-center sm:justify-between gap-8 sm:gap-12">
+        <div className="flex flex-col-reverse sm:flex-row items-center sm:justify-between gap-8 sm:gap-20">
           
           {/* Text Side */}
           <div className="w-full sm:w-1/2 text-left">
-            <h1 className="text-4xl sm:text-5xl md:text-6xl font-bold text-neutral-900 mb-4 leading-tight tracking-[-0.02em]">
+            <h1 className="text-4xl sm:text-5xl md:text-6xl font-bold text-neutral-900 mb-4 leading-tight tracking-[-2px]">
               Deliciously <span className="text-green-600">Homemade</span>.<br />
               Delivered to Your Door.
             </h1>
