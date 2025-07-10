@@ -5,7 +5,8 @@ export default function Footer() {
   return (
     <footer className="bg-[#000000] text-white py-12">
       <div className="container mx-auto px-4">
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mb-8">
+        {/* Increased gap between columns */}
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-16 mb-8"> 
           {/* About */}
           <div className="md:col-span-1">
             <h3 className="text-xl font-bold mb-3 text-green-400">Masa Treat</h3>
