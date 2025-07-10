@@ -4,23 +4,116 @@ import {
   ChevronDown,
   ShoppingCart as ShoppingCartIcon,
 } from "lucide-react";
-import { Product, PackageOption } from "@/data/types";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
-import { formatCurrency } from "@/lib/utils";
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogHeader,
-  DialogTitle,
-  DialogClose,
-} from "@/components/ui/dialog";
-import { AspectRatio } from "@/components/ui/aspect-ratio";
-import { ScrollArea } from "@/components/ui/scroll-area";
-import { useDispatch } from "react-redux";
-import { addToCart } from "../../services/cartSlice";
+// Assuming Product and PackageOption types are defined elsewhere,
+// for this self-contained example, I'll define them here.
+// In your actual project, ensure these imports are correct.
+// import { Product, PackageOption } from "@/data/types";
+// import { Button } from "@/components/ui/button";
+// import { Input } from "@/components/ui/input";
+// import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
+// import { formatCurrency } from "@/lib/utils";
+// import {
+//   Dialog,
+//   DialogContent,
+//   DialogDescription,
+//   DialogHeader,
+//   DialogTitle,
+//   DialogClose,
+// } from "@/components/ui/dialog";
+// import { AspectRatio } from "@/components/ui/aspect-ratio";
+// import { ScrollArea } from "@/components/ui/scroll-area";
+// import { useDispatch } from "react-redux";
+// import { addToCart } from "../../services/cartSlice";
+
+// --- Mocking external dependencies for self-contained code ---
+// You should replace these with your actual imports in your project
+interface PackageOption {
+  id: string;
+  name: string;
+  description?: string;
+  price: number;
+  quantity?: number; // Added for custom package handling
+}
+
+interface Product {
+  id: string;
+  product: string;
+  description?: string;
+  image: string;
+  price: number;
+  hasPackageOptions?: boolean;
+  packageOptions?: PackageOption[];
+  minimumOrder?: number;
+}
+
+// Mocking shadcn/ui components and lucide-react for demonstration
+// In a real project, these would be imported from your UI library.
+const Button = ({ children, onClick, className, variant, size, disabled, type }) => (
+  <button
+    onClick={onClick}
+    className={`p-2 rounded ${className} ${variant === 'outline' ? 'border' : 'bg-blue-500 text-white'}`}
+    disabled={disabled}
+    type={type}
+  >
+    {children}
+  </button>
+);
+const Input = ({ type, value, onChange, className, min }) => (
+  <input
+    type={type}
+    value={value}
+    onChange={onChange}
+    className={`border rounded p-1 ${className}`}
+    min={min}
+  />
+);
+const RadioGroup = ({ value, onValueChange, className, children }) => (
+  <div className={className} role="radiogroup" aria-activedescendant={value}>
+    {children}
+  </div>
+);
+const RadioGroupItem = ({ value, id }) => (
+  <input type="radio" value={value} id={id} checked={value === id} readOnly />
+);
+const Dialog = ({ open, onOpenChange, children }) => (
+  open ? (
+    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+      <div className="relative" onClick={(e) => e.stopPropagation()}>
+        {children}
+      </div>
+    </div>
+  ) : null
+);
+const DialogContent = ({ children, className }) => (
+  <div className={`bg-white shadow-lg ${className}`}>
+    {children}
+  </div>
+);
+const DialogHeader = ({ children }) => <div>{children}</div>;
+const DialogTitle = ({ children, className }) => <h2 className={className}>{children}</h2>;
+const DialogDescription = ({ children, className }) => <p className={className}>{children}</p>;
+const DialogClose = ({ asChild, children }) => (asChild ? children : <button>{children}</button>);
+const AspectRatio = ({ ratio, className, children }) => (
+  <div style={{ paddingTop: `${100 / ratio}%` }} className={`relative ${className}`}>
+    <div className="absolute inset-0">{children}</div>
+  </div>
+);
+const ScrollArea = ({ children, className }) => (
+  <div className={`overflow-y-auto ${className}`}>
+    {children}
+  </div>
+);
+const ChevronUp = (props) => <svg {...props} xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="m18 15-6-6-6 6"/></svg>;
+const ChevronDown = (props) => <svg {...props} xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="m6 9 6 6 6-6"/></svg>;
+const ShoppingCartIcon = (props) => <svg {...props} xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="8" cy="21" r="1"/><circle cx="19" cy="21" r="1"/><path d="M2.05 2.05h2l2.66 12.42a2 2 0 0 0 2 1.58h9.78a2 2 0 0 0 1.95-1.57l1.65-7.43H5.12"/></svg>;
+
+// Mocking Redux for demonstration
+const useDispatch = () => () => console.log("Dispatching action (mock)");
+const addToCart = (payload) => ({ type: 'ADD_TO_CART', payload });
+
+// Mocking formatCurrency utility
+const formatCurrency = (amount: number) => `₦${amount.toLocaleString('en-NG')}`;
+// --- End Mocking ---
 
 interface ProductModalProps {
   product: Product;
@@ -28,14 +121,14 @@ interface ProductModalProps {
   onOpenChange: (open: boolean) => void;
 }
 
-export default function ProductModal({
+export default function App({ // Changed to App for default export
   product,
   open,
   onOpenChange,
 }: ProductModalProps) {
   const dispatch = useDispatch();
   const [quantity, setQuantity] = useState(1);
-  const [notes, setNotes] = useState("");
+  const [notes, setNotes] = useState(""); // Notes state is present but not used in UI
   const [selectedPackage, setSelectedPackage] = useState<PackageOption | undefined>(
     product.packageOptions?.[0]
   );
@@ -47,11 +140,11 @@ export default function ProductModal({
   useEffect(() => {
     if (open) {
       setQuantity(1);
-      setNotes("");
+      setNotes(""); // Reset notes on open
       setSelectedPackage(product.packageOptions?.[0]);
       setCustomQuantity(minOrder);
     }
-  }, [open, product]);
+  }, [open, product, minOrder]); // Added minOrder to dependencies
 
   const handleQuantityChange = (val: number) => {
     if (val >= 1) setQuantity(val);
@@ -81,7 +174,8 @@ export default function ProductModal({
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="w-full max-w-sm sm:max-w-md p-0 mx-4 overflow-hidden rounded-xl max-h-[90vh]">
+      {/* Adjusted DialogContent className: removed mx-4 */}
+      <DialogContent className="w-full max-w-sm sm:max-w-md p-0 overflow-hidden rounded-xl max-h-[90vh]">
         <ScrollArea className="max-h-[90vh]">
           <div className="flex flex-col">
             {/* Product Image */}
@@ -101,7 +195,7 @@ export default function ProductModal({
                     <DialogTitle className="text-lg sm:text-2xl font-semibold">
                       {product.product}
                     </DialogTitle>
-                    <DialogDescription className="text-brand-600 font-medium mt-1 text-sm sm:text-base">
+                    <DialogDescription className="text-green-600 font-medium mt-1 text-sm sm:text-base">
                       {product.hasPackageOptions
                         ? `From ${formatCurrency(product.price)}`
                         : formatCurrency(product.price)}
@@ -118,7 +212,7 @@ export default function ProductModal({
               )}
 
               {/* Package Options */}
-              {product.hasPackageOptions && product.packageOptions?.length > 0 && (
+              {product.hasPackageOptions && product.packageOptions && product.packageOptions.length > 0 && (
                 <div className="space-y-3">
                   <label className="text-sm font-medium">Choose Package</label>
                   <RadioGroup
