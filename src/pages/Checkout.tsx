@@ -52,6 +52,10 @@
   const [scheduledTime, setScheduledTime] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
 
+  // Validation States
+  const [phoneError, setPhoneError] = useState<string | null>(null);
+  const [emailError, setEmailError] = useState<string | null>(null);
+
   const selectedZone = deliveryZone ? getDeliveryZoneById(deliveryZone) : undefined;
 
   // Define the pickup address
@@ -67,8 +71,42 @@
     }
   }, []);
 
+  // Validation functions
+  const validatePhoneNumber = (number: string) => {
+    // Regex for 11-digit Nigerian numbers starting with 0
+    const nigerianPhoneRegex = /^0\d{10}$/;
+    if (!nigerianPhoneRegex.test(number)) {
+      setPhoneError("Please enter a valid 11-digit Nigerian phone number (e.g., 08012345678).");
+      return false;
+    }
+    setPhoneError(null);
+    return true;
+  };
+
+  const validateEmailAddress = (emailAddress: string) => {
+    // Basic email regex
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (emailAddress && !emailRegex.test(emailAddress)) { // Email is optional, but if provided, it must be valid
+      setEmailError("Please enter a valid email address.");
+      return false;
+    }
+    setEmailError(null);
+    return true;
+  };
+
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
+
+    // Perform validation before submission
+    const isPhoneValid = validatePhoneNumber(phone);
+    const isEmailValid = validateEmailAddress(email);
+
+    if (!isPhoneValid || !isEmailValid) {
+      toast.error("Please correct the errors in your information.");
+      setIsSubmitting(false); // Ensure submission state is reset if validation fails
+      return;
+    }
+
     setIsSubmitting(true);
 
     const grandTotal = totalAmount; // delivery fee is paid on arrival
@@ -172,12 +210,39 @@
                 <h2 className="text-lg font-medium mb-4">Your Details</h2>
                 <div className="space-y-4">
                   <Input required placeholder="Name" value={name} onChange={(e) => setName(e.target.value)} />
-                  <Input required placeholder="Phone Number" value={phone} onChange={(e) => setPhone(e.target.value)} />
-                  <Input placeholder="Email Address" type="email" value={email} onChange={(e) => setEmail(e.target.value)} />
+                  <div>
+                    <Input
+                      required
+                      placeholder="Phone Number (e.g., 08012345678)"
+                      value={phone}
+                      onChange={(e) => {
+                        setPhone(e.target.value);
+                        // Clear error on change, re-validate on blur or submit
+                        if (phoneError) validatePhoneNumber(e.target.value);
+                      }}
+                      onBlur={() => validatePhoneNumber(phone)} // Validate on blur
+                      type="tel" // Use type="tel" for better mobile keyboard
+                    />
+                    {phoneError && <p className="text-red-500 text-xs mt-1">{phoneError}</p>}
+                  </div>
+                  <div>
+                    <Input
+                      placeholder="Email Address"
+                      type="email"
+                      value={email}
+                      onChange={(e) => {
+                        setEmail(e.target.value);
+                        // Clear error on change, re-validate on blur or submit
+                        if (emailError) validateEmailAddress(e.target.value);
+                      }}
+                      onBlur={() => validateEmailAddress(email)} // Validate on blur
+                    />
+                    {emailError && <p className="text-red-500 text-xs mt-1">{emailError}</p>}
+                  </div>
                 </div>
               </div>
 
-               {/* Delivery Options */}
+                {/* Delivery Options */}
                 <div className="bg-white p-5 rounded-lg shadow-sm border">
                   <h2 className="text-lg font-medium mb-4">Delivery Options</h2>
                   
@@ -282,7 +347,7 @@
                         className="flex justify-between"
                       >
                         <div>
-                          {quantity}x {item.product.product} {/* Changed item.product.name to item.product.product */}
+                          {quantity}x {item.product.product}
                           {item.selectedPackage && ` (${item.selectedPackage.name})`}
                         </div>
                         <div>{formatCurrency(unitPrice * quantity)}</div>
@@ -304,7 +369,11 @@
                   </div>
                 )}
 
-                <Button type="submit" className="w-full mt-6" disabled={isSubmitting}>
+                <Button
+                  type="submit"
+                  className="w-full mt-6"
+                  disabled={isSubmitting || !!phoneError || !!emailError} // Disable if any errors exist
+                >
                   {isSubmitting ? "Processing..." : "Pay Now"}
                 </Button>
               </div>
