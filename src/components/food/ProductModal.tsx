@@ -4,10 +4,10 @@ import {
   ChevronDown,
   ShoppingCart as ShoppingCartIcon,
 } from "lucide-react";
-import { Product, PackageOption } from "@/data/types";
+import { Product, PackageOption } from "@/data/types"; // Keep PackageOption for type definition if Product still references it, otherwise remove.
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
+import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group"; // This might become unused
 import { formatCurrency } from "@/lib/utils";
 import {
   Dialog,
@@ -36,20 +36,14 @@ export default function ProductModal({
   const dispatch = useDispatch();
   const [quantity, setQuantity] = useState(1);
   const [notes, setNotes] = useState("");
-  const [selectedPackage, setSelectedPackage] = useState<PackageOption | undefined>(
-    product.packageOptions?.[0]
-  );
-  const [customQuantity, setCustomQuantity] = useState(product.minimumOrder || 4);
-
-  const isCustomOrder = selectedPackage?.id === "custom";
-  const minOrder = product.minimumOrder || 4;
+  // Removed selectedPackage and customQuantity states as they are no longer needed
+  // Removed isCustomOrder and minOrder variables
 
   useEffect(() => {
     if (open) {
       setQuantity(1);
       setNotes("");
-      setSelectedPackage(product.packageOptions?.[0]);
-      setCustomQuantity(minOrder);
+      // Removed package-related state resets
     }
   }, [open, product]);
 
@@ -57,27 +51,16 @@ export default function ProductModal({
     if (val >= 1) setQuantity(val);
   };
 
-  const handleCustomQtyChange = (val: number) => {
-    if (val >= minOrder) setCustomQuantity(val);
-  };
+  // Removed handleCustomQtyChange as custom quantity is no longer needed
 
   const handleAddToCart = () => {
-    const finalPackage = isCustomOrder
-      ? {
-          ...selectedPackage!,
-          quantity: customQuantity,
-          price: customQuantity * product.price!,
-        }
-      : selectedPackage;
-
-    dispatch(addToCart({ product, quantity, notes, selectedPackage: finalPackage }));
+    // Simplified addToCart as there are no package options or custom quantities
+    dispatch(addToCart({ product, quantity, notes, selectedPackage: null })); // Pass null for selectedPackage
     onOpenChange(false);
   };
 
-  const unitPrice = selectedPackage?.price || product.price || 0;
-  const totalPrice = isCustomOrder
-    ? product.price! * customQuantity * quantity
-    : unitPrice * quantity;
+  // Simplified price calculation
+  const totalPrice = product.price * quantity;
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
@@ -103,9 +86,8 @@ export default function ProductModal({
                       {product.product}
                     </DialogTitle>
                     <DialogDescription className="text-brand-600 font-medium mt-1 text-sm sm:text-base">
-                      {product.hasPackageOptions
-                        ? `From ${formatCurrency(product.price)}`
-                        : formatCurrency(product.price)}
+                      {/* Display product's base price */}
+                      {formatCurrency(product.price)}
                     </DialogDescription>
                   </div>
                 </div>
@@ -118,92 +100,8 @@ export default function ProductModal({
                 </p>
               )}
 
-              {/* Package Options */}
-              {product.hasPackageOptions && product.packageOptions?.length > 0 && (
-                <div className="space-y-3">
-                  <label className="text-sm font-medium">Choose Package</label>
-                  <RadioGroup
-                    value={selectedPackage?.id}
-                    onValueChange={(id) =>
-                      setSelectedPackage(
-                        product.packageOptions?.find((p) => p.id === id)
-                      )
-                    }
-                    className="flex flex-col gap-2"
-                  >
-                    {product.packageOptions.map((pkg) => (
-                      <label
-                        key={pkg.id}
-                        htmlFor={pkg.id}
-                        className={`flex items-center justify-between p-3 border rounded-lg cursor-pointer transition-all duration-200 ${
-                          selectedPackage?.id === pkg.id
-                            ? "border-green-600 bg-green-50"
-                            : "border-gray-200 hover:bg-gray-50"
-                        }`}
-                      >
-                        <div className="flex items-start gap-3">
-                          <RadioGroupItem value={pkg.id} id={pkg.id} />
-                          <div className="space-y-0.5">
-                            <p className="text-sm font-medium">{pkg.name}</p>
-                            {pkg.description && (
-                              <p className="text-xs text-neutral-500">
-                                {pkg.description}
-                              </p>
-                            )}
-                          </div>
-                        </div>
-                        <span className="text-green-600 text-sm font-semibold">
-                          {pkg.id === "custom"
-                            ? `From ${formatCurrency(pkg.price)}`
-                            : formatCurrency(pkg.price)}
-                        </span>
-                      </label>
-                    ))}
-                  </RadioGroup>
-                </div>
-              )}
-
-              {/* Custom Quantity Input */}
-              {isCustomOrder && (
-                <div className="pt-4 border-t border-dashed space-y-2">
-                  <label className="text-sm font-medium">
-                    Custom Quantity (Min: {minOrder})
-                  </label>
-                  <div className="flex items-center">
-                    <Button
-                      type="button"
-                      variant="outline"
-                      size="icon"
-                      className="h-8 w-8"
-                      onClick={() => handleCustomQtyChange(customQuantity - 1)}
-                      disabled={customQuantity <= minOrder}
-                    >
-                      <ChevronDown className="w-4 h-4" />
-                    </Button>
-                    <Input
-                      type="number"
-                      value={customQuantity}
-                      onChange={(e) =>
-                        handleCustomQtyChange(parseInt(e.target.value) || minOrder)
-                      }
-                      className="w-16 text-center mx-2 h-8"
-                      min={minOrder}
-                    />
-                    <Button
-                      type="button"
-                      variant="outline"
-                      size="icon"
-                      className="h-8 w-8"
-                      onClick={() => handleCustomQtyChange(customQuantity + 1)}
-                    >
-                      <ChevronUp className="w-4 h-4" />
-                    </Button>
-                    <span className="ml-3 text-sm text-neutral-600">
-                      {formatCurrency(product.price! * customQuantity)}
-                    </span>
-                  </div>
-                </div>
-              )}
+              {/* Removed Package Options section */}
+              {/* Removed Custom Quantity Input section */}
 
               {/* Quantity Selector */}
               <div className="space-y-2">
