@@ -141,7 +141,7 @@ export default function CartSidebar() {
         <SheetClose asChild>
           <Button asChild className="w-full py-3 text-sm">
             <Link to="/checkout" className="flex items-center justify-center gap-1">
-              Proceed to Checkout
+              Proceed to Payment
               <ChevronRight className="h-4 w-4" />
             </Link>
           </Button>
