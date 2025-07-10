@@ -170,17 +170,17 @@ export default function Checkout() {
                 <div className="space-y-4">
                   <Input required placeholder="Full Name" value={name} onChange={(e) => setName(e.target.value)} />
                   <Input required placeholder="Phone Number" value={phone} onChange={(e) => setPhone(e.target.value)} />
-                  <Input placeholder="Email Address (optional)" type="email" value={email} onChange={(e) => setEmail(e.target.value)} />
+                  <Input placeholder="Email Address" type="email" value={email} onChange={(e) => setEmail(e.target.value)} />
                 </div>
               </div>
 
               {/* Delivery */}
               <div className="bg-white p-5 rounded-lg shadow-sm border">
-                <h2 className="text-lg font-medium mb-4">Delivery Options</h2>
+                <h2 className="text-lg font-medium mb-4">Pickup or Delivery</h2>
                 <RadioGroup value={deliveryMethod} onValueChange={(val) => setDeliveryMethod(val as DeliveryMethod)} className="mb-4 flex gap-4">
                   <div className="flex items-center gap-2">
                     <RadioGroupItem value="pickup" id="pickup" />
-                    <Label htmlFor="pickup">Pickup (Free)</Label>
+                    <Label htmlFor="pickup">Pickup (Citec Estate, Mbora)</Label>
                   </div>
                   <div className="flex items-center gap-2">
                     <RadioGroupItem value="delivery" id="delivery" />
