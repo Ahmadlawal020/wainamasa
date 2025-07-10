@@ -169,58 +169,88 @@
             <div className="md:col-span-2 space-y-6">
               {/* User Info */}
               <div className="bg-white p-5 rounded-lg shadow-sm border">
-                <h2 className="text-lg font-medium mb-4">Your Information</h2>
+                <h2 className="text-lg font-medium mb-4">Your Details</h2>
                 <div className="space-y-4">
-                  <Input required placeholder="Full Name" value={name} onChange={(e) => setName(e.target.value)} />
+                  <Input required placeholder="Name" value={name} onChange={(e) => setName(e.target.value)} />
                   <Input required placeholder="Phone Number" value={phone} onChange={(e) => setPhone(e.target.value)} />
                   <Input placeholder="Email Address" type="email" value={email} onChange={(e) => setEmail(e.target.value)} />
                 </div>
               </div>
 
-              {/* Delivery */}
-              <div className="bg-white p-5 rounded-lg shadow-sm border">
-                <h2 className="text-lg font-medium mb-4">Pickup or Delivery</h2>
-                <RadioGroup value={deliveryMethod} onValueChange={(val) => setDeliveryMethod(val as DeliveryMethod)} className="mb-4 flex gap-4">
-                  <div className="flex items-center gap-2">
-                    <RadioGroupItem value="pickup" id="pickup" />
-                    <Label htmlFor="pickup">Pickup</Label>
-                  </div>
-                  <div className="flex items-center gap-2">
-                    <RadioGroupItem value="delivery" id="delivery" />
-                    <Label htmlFor="delivery">Delivery (Paid on arrival)</Label>
-                  </div>
-                </RadioGroup>
-
-                {deliveryMethod === "pickup" && (
-                  <div className="space-y-4">
-                    <p className="text-sm text-neutral-600">
-                      Pickup Address: B14 Close, Citec Estate, Jabi-Airport Road Bypass, Mbora District, Abuja.
-                    </p>
-                  </div>
-                )}
-
-                {deliveryMethod === "delivery" && (
-                  <div className="space-y-4">
-                    <Select value={deliveryZone} onValueChange={setDeliveryZone} required>
-                      <SelectTrigger>
-                        <SelectValue placeholder="Select delivery zone" />
-                      </SelectTrigger>
-                      <SelectContent>
-                        {deliveryZones.map((zone) => (
-                          <SelectItem key={zone.id} value={zone.id}>
-                            {zone.name} - {formatCurrency(zone.price)}
-                          </SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
-                    <Input
-                      placeholder="Detailed Address"
-                      required
-                      value={deliveryAddress}
-                      onChange={(e) => setDeliveryAddress(e.target.value)}
-                    />
-                  </div>
-                )}
+               {/* Delivery Options */}
+                <div className="bg-white p-5 rounded-lg shadow-sm border">
+                  <h2 className="text-lg font-medium mb-4">Delivery Options</h2>
+                  
+                  <RadioGroup 
+                    value={deliveryMethod} 
+                    onValueChange={(val) => setDeliveryMethod(val as DeliveryMethod)}
+                    className="mb-6"
+                  >
+                    <div className="flex items-center space-x-2 mb-2">
+                      <RadioGroupItem value="pickup" id="pickup" />
+                      <Label htmlFor="pickup" className="text-sm">Pickup</Label>
+                    </div>
+                    
+                    <div className="flex items-center space-x-2">
+                      <RadioGroupItem value="delivery" id="delivery" />
+                      <Label htmlFor="delivery" className="text-sm">
+                        Delivery (Paid on arrival to dispatch rider)
+                      </Label>
+                    </div>
+                  </RadioGroup>
+                  
+                  {deliveryMethod === "delivery" && (
+                    <div className="space-y-4 mb-6">
+                      <div>
+                        <Label htmlFor="zone" className="text-sm">Select Your Neighbourhood</Label>
+                        <Select 
+                          value={deliveryZone} 
+                          onValueChange={setDeliveryZone}
+                          required={deliveryMethod === "delivery"}
+                        >
+                          <SelectTrigger className="text-sm">
+                            <SelectValue placeholder="Select a zone" />
+                          </SelectTrigger>
+                          <SelectContent>
+                            {deliveryZones.map((zone) => (
+                              <SelectItem key={zone.id} value={zone.id} className="text-sm">
+                                {zone.name} - {formatCurrency(zone.price)}
+                              </SelectItem>
+                            ))}
+                          </SelectContent>
+                        </Select>
+                      </div>
+                      
+                      <div>
+                        <Label htmlFor="address" className="text-sm">Detailed Address</Label>
+                        <Input 
+                          id="address"
+                          placeholder="Enter your full address"
+                          value={deliveryAddress}
+                          onChange={(e) => setDeliveryAddress(e.target.value)}
+                          className="text-sm"
+                          required={deliveryMethod === "delivery"}
+                        />
+                      </div>
+                    </div>
+                  )}
+                  
+                  {deliveryMethod === "pickup" && (
+                    <div className="mb-6 p-4 bg-neutral-50 rounded-lg">
+                      <h3 className="font-medium mb-2 text-sm">Pickup Address</h3>
+                      <p className="text-neutral-700 text-sm">
+                        B14 Close, Citec Estate, Jabi-Airport Road Bypass, Mbora, Abuja.
+                      </p>
+                      <a 
+                        href="https://maps.app.goo.gl/i8vECCn7M6Lti8w6A" 
+                        target="_blank" 
+                        rel="noopener noreferrer"
+                        className="text-xs text-brand-500 hover:underline mt-1 inline-block"
+                      >
+                        Need directions? View on Google Maps
+                      </a>
+                    </div>
+                  )}
 
                 {/* Scheduling */}
                 <div className="mt-4 space-y-2">
