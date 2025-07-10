@@ -1,14 +1,14 @@
 import { Trash2, ChevronRight, ShoppingCartIcon } from "lucide-react";
-import { useSelector, useDispatch } from "react-redux";
-import { RootState } from "../../app/store";
-import { removeFromCart, updateQuantity } from "../../services/cartSlice";
-import { Button } from "@/components/ui/button";
-import { formatCurrency } from "@/lib/utils";
-import { ScrollArea } from "@/components/ui/scroll-area";
-import { Link } from "react-router-dom";
-import { SheetHeader, SheetTitle, SheetClose } from "@/components/ui/sheet";
+ import { useSelector, useDispatch } from "react-redux";
+ import { RootState } from "../../app/store";
+ import { removeFromCart, updateQuantity } from "../../services/cartSlice";
+ import { Button } from "@/components/ui/button";
+ import { formatCurrency } from "@/lib/utils";
+ import { ScrollArea } from "@/components/ui/scroll-area";
+ import { Link } from "react-router-dom";
+ import { SheetHeader, SheetTitle, SheetClose } from "@/components/ui/sheet";
 
-export default function CartSidebar() {
+ export default function CartSidebar() {
   const dispatch = useDispatch();
   const items = useSelector((state: RootState) => state.cart.items);
 
@@ -62,7 +62,7 @@ export default function CartSidebar() {
                   />
                 </div>
 
-                <div className="flex-1 text-sm space-y-1">
+                <div className="flex-1 text-sm"> {/* Removed space-y-1 here */}
                   <div className="flex justify-between">
                     <div>
                       <h4 className="font-semibold text-sm">{item.product.product}</h4>
@@ -149,4 +149,4 @@ export default function CartSidebar() {
       </div>
     </div>
   );
-}
+ }
