@@ -230,9 +230,9 @@ const OrderDetails = () => {
                   </div>
                 ) : (
                   <div>
-                    <p className="font-medium">Our Main Store</p>
+                    <p className="font-medium">Masa Treat</p>
                     <p className="text-sm text-gray-500">
-                      123 Business Ave, Abuja
+                      B14 Close, Citec Estate, Mbora, Abuja.
                     </p>
                   </div>
                 )}
