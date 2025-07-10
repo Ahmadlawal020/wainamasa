@@ -1,35 +1,35 @@
- declare global {
+declare global {
   interface Window {
     PaystackPop?: any;
   }
- }
+}
 
- import { useEffect, useState } from "react";
- import { useNavigate } from "react-router-dom";
- import { useSelector, useDispatch } from "react-redux";
- import { RootState } from "../app/store";
- import { clearCart } from "../services/cartSlice";
- import { useVerifyPaymentMutation } from "../services/api/orderApi";
+import { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
+import { useSelector, useDispatch } from "react-redux";
+import { RootState } from "../app/store";
+import { clearCart } from "../services/cartSlice";
+import { useVerifyPaymentMutation } from "../services/api/orderApi";
 
- import { Button } from "@/components/ui/button";
- import { Input } from "@/components/ui/input";
- import { Label } from "@/components/ui/label";
- import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
- import {
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
+import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
- } from "@/components/ui/select";
- import { formatCurrency, generateOrderId } from "@/lib/utils";
- import { DeliveryMethod } from "@/data/types";
- import { toast } from "@/components/ui/sonner";
- import Header from "@/components/layout/Header";
- import Footer from "@/components/layout/Footer";
- import { deliveryZones, getDeliveryZoneById } from "@/data/deliveryZones";
+} from "@/components/ui/select";
+import { formatCurrency, generateOrderId } from "@/lib/utils";
+import { DeliveryMethod } from "@/data/types";
+import { toast } from "@/components/ui/sonner";
+import Header from "@/components/layout/Header";
+import Footer from "@/components/layout/Footer";
+import { deliveryZones, getDeliveryZoneById } from "@/data/deliveryZones";
 
- export default function Checkout() {
+export default function Checkout() {
   const navigate = useNavigate();
   const dispatch = useDispatch();
   const [verifyPayment] = useVerifyPaymentMutation();
@@ -60,6 +60,11 @@
 
   // Define the pickup address
   const pickupAddress = "Aroma Kitchen, Citec Estate, Mbora, Abuja"; // Example pickup address
+
+  // Scroll to the top of the page when the component mounts
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, []); // Empty dependency array ensures this runs only once on mount
 
   // Load Paystack
   useEffect(() => {
@@ -384,4 +389,4 @@
       <Footer />
     </>
   );
- }
+}
