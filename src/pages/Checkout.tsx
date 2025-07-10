@@ -183,7 +183,7 @@
                 <RadioGroup value={deliveryMethod} onValueChange={(val) => setDeliveryMethod(val as DeliveryMethod)} className="mb-4 flex gap-4">
                   <div className="flex items-center gap-2">
                     <RadioGroupItem value="pickup" id="pickup" />
-                    <Label htmlFor="pickup">Pickup (Citec Estate, Mbora)</Label>
+                    <Label htmlFor="pickup">Pickup</Label>
                   </div>
                   <div className="flex items-center gap-2">
                     <RadioGroupItem value="delivery" id="delivery" />
@@ -194,7 +194,7 @@
                 {deliveryMethod === "pickup" && (
                   <div className="space-y-4">
                     <p className="text-sm text-neutral-600">
-                      **Pickup Address:** {pickupAddress}
+                      Pickup Address: B14 Close, Citec Estate, Jabi-Airport Road Bypass, Mbora District, Abuja.
                     </p>
                   </div>
                 )}
