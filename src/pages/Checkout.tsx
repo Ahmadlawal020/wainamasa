@@ -1,35 +1,35 @@
-declare global {
+ declare global {
   interface Window {
     PaystackPop?: any;
   }
-}
+ }
 
-import { useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
-import { useSelector, useDispatch } from "react-redux";
-import { RootState } from "../app/store";
-import { clearCart } from "../services/cartSlice";
-import { useVerifyPaymentMutation } from "../services/api/orderApi";
+ import { useEffect, useState } from "react";
+ import { useNavigate } from "react-router-dom";
+ import { useSelector, useDispatch } from "react-redux";
+ import { RootState } from "../app/store";
+ import { clearCart } from "../services/cartSlice";
+ import { useVerifyPaymentMutation } from "../services/api/orderApi";
 
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
-import {
+ import { Button } from "@/components/ui/button";
+ import { Input } from "@/components/ui/input";
+ import { Label } from "@/components/ui/label";
+ import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
+ import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from "@/components/ui/select";
-import { formatCurrency, generateOrderId } from "@/lib/utils";
-import { DeliveryMethod } from "@/data/types";
-import { toast } from "@/components/ui/sonner";
-import Header from "@/components/layout/Header";
-import Footer from "@/components/layout/Footer";
-import { deliveryZones, getDeliveryZoneById } from "@/data/deliveryZones";
+ } from "@/components/ui/select";
+ import { formatCurrency, generateOrderId } from "@/lib/utils";
+ import { DeliveryMethod } from "@/data/types";
+ import { toast } from "@/components/ui/sonner";
+ import Header from "@/components/layout/Header";
+ import Footer from "@/components/layout/Footer";
+ import { deliveryZones, getDeliveryZoneById } from "@/data/deliveryZones";
 
-export default function Checkout() {
+ export default function Checkout() {
   const navigate = useNavigate();
   const dispatch = useDispatch();
   const [verifyPayment] = useVerifyPaymentMutation();
@@ -53,6 +53,9 @@ export default function Checkout() {
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   const selectedZone = deliveryZone ? getDeliveryZoneById(deliveryZone) : undefined;
+
+  // Define the pickup address
+  const pickupAddress = "Aroma Kitchen, Citec Estate, Mbora, Abuja"; // Example pickup address
 
   // Load Paystack
   useEffect(() => {
@@ -97,8 +100,8 @@ export default function Checkout() {
             })),
             delivery: {
               type: deliveryMethod,
-              address: deliveryAddress || "",
-              fee: 0,
+              address: deliveryMethod === "pickup" ? pickupAddress : deliveryAddress, // Use pickupAddress if pickup
+              fee: deliveryMethod === "pickup" ? 0 : (selectedZone?.price || 0), // Set delivery fee to 0 for pickup
             },
             isScheduled,
             scheduledDate,
@@ -188,6 +191,14 @@ export default function Checkout() {
                   </div>
                 </RadioGroup>
 
+                {deliveryMethod === "pickup" && (
+                  <div className="space-y-4">
+                    <p className="text-sm text-neutral-600">
+                      **Pickup Address:** {pickupAddress}
+                    </p>
+                  </div>
+                )}
+
                 {deliveryMethod === "delivery" && (
                   <div className="space-y-4">
                     <Select value={deliveryZone} onValueChange={setDeliveryZone} required>
@@ -241,7 +252,7 @@ export default function Checkout() {
                         className="flex justify-between"
                       >
                         <div>
-                          {quantity}x {item.product.name}
+                          {quantity}x {item.product.product} {/* Changed item.product.name to item.product.product */}
                           {item.selectedPackage && ` (${item.selectedPackage.name})`}
                         </div>
                         <div>{formatCurrency(unitPrice * quantity)}</div>
@@ -256,6 +267,13 @@ export default function Checkout() {
                   <span>{formatCurrency(totalAmount)}</span>
                 </div>
 
+                {deliveryMethod === "delivery" && selectedZone && (
+                  <div className="flex justify-between text-sm text-neutral-600 mt-2">
+                    <span>Delivery Fee ({selectedZone.name}):</span>
+                    <span>{formatCurrency(selectedZone.price)}</span>
+                  </div>
+                )}
+
                 <Button type="submit" className="w-full mt-6" disabled={isSubmitting}>
                   {isSubmitting ? "Processing..." : "Pay Now"}
                 </Button>
@@ -267,4 +285,4 @@ export default function Checkout() {
       <Footer />
     </>
   );
-}
+ }
