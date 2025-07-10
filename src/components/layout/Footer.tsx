@@ -44,7 +44,7 @@ export default function Footer() {
               </li>
             </ul>
             <p className="mt-2 text-neutral-500"> {/* Reduced mt */}
-              Kindly note: Orders can only be placed within these hours.
+              Kindly note that orders can only be placed within these hours.
             </p>
           </div>
 
