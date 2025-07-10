@@ -274,7 +274,7 @@
                           required={deliveryMethod === "delivery"}
                         >
                           <SelectTrigger className="text-sm">
-                            <SelectValue placeholder="Select a zone" />
+                            <SelectValue placeholder="Select a neighbourhood" />
                           </SelectTrigger>
                           <SelectContent>
                             {deliveryZones.map((zone) => (
