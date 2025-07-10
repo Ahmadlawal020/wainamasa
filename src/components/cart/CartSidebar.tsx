@@ -1,4 +1,4 @@
-import { Trash2, ChevronRight } from "lucide-react";
+import { Trash2, ChevronRight, ShoppingCartIcon } from "lucide-react";
 import { useSelector, useDispatch } from "react-redux";
 import { RootState } from "../../app/store";
 import { removeFromCart, updateQuantity } from "../../services/cartSlice";
@@ -7,7 +7,6 @@ import { formatCurrency } from "@/lib/utils";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Link } from "react-router-dom";
 import { SheetHeader, SheetTitle, SheetClose } from "@/components/ui/sheet";
-import { ShoppingCartIcon } from "lucide-react";
 
 export default function CartSidebar() {
   const dispatch = useDispatch();
@@ -21,20 +20,18 @@ export default function CartSidebar() {
   if (items.length === 0) {
     return (
       <div className="h-full flex flex-col">
-        <SheetHeader className="px-4 py-3 border-b md:px-6 md:py-4">
-          <SheetTitle className="text-lg md:text-xl font-semibold font-display">Your Cart</SheetTitle>
+        <SheetHeader className="px-4 py-3 border-b">
+          <SheetTitle className="text-lg font-semibold">Your Cart</SheetTitle>
         </SheetHeader>
-        <div className="flex-1 flex flex-col items-center justify-center p-6">
-          <div className="text-center">
-            <ShoppingCartIcon className="mx-auto h-16 w-16 text-neutral-300 mb-4" />
-            <h3 className="text-xl font-medium mb-2">Your cart is empty</h3>
-            <p className="text-neutral-500 mb-6">Add some items to get started!</p>
-            <SheetClose asChild>
-              <Button asChild>
-                <Link to="/menu">Browse Menu</Link>
-              </Button>
-            </SheetClose>
-          </div>
+        <div className="flex-1 flex flex-col items-center justify-center p-6 text-center">
+          <ShoppingCartIcon className="h-16 w-16 text-neutral-300 mb-4" />
+          <h3 className="text-xl font-medium mb-2">Your cart is empty</h3>
+          <p className="text-neutral-500 mb-6">Add some items to get started!</p>
+          <SheetClose asChild>
+            <Button asChild>
+              <Link to="/menu">Browse Menu</Link>
+            </Button>
+          </SheetClose>
         </div>
       </div>
     );
@@ -42,12 +39,12 @@ export default function CartSidebar() {
 
   return (
     <div className="h-full flex flex-col">
-      <SheetHeader className="px-4 py-3 border-b md:px-6 md:py-4">
-        <SheetTitle className="text-lg md:text-xl font-semibold font-display">Your Cart</SheetTitle>
+      <SheetHeader className="px-4 py-3 border-b">
+        <SheetTitle className="text-lg font-semibold">Your Cart</SheetTitle>
       </SheetHeader>
 
-      <ScrollArea className="flex-1 px-4 py-4 md:px-6">
-        <div className="space-y-4">
+      <ScrollArea className="flex-1 px-4 py-4">
+        <div className="space-y-3">
           {items.map((item, index) => {
             const packageId = item.selectedPackage?.id;
             const itemPrice = item.selectedPackage?.price || item.product.price;
@@ -55,9 +52,9 @@ export default function CartSidebar() {
             return (
               <div
                 key={`${item.product._id}-${packageId || index}`}
-                className="flex flex-col sm:flex-row sm:items-start sm:space-x-4 space-y-3 sm:space-y-0 pb-4 border-b"
+                className="flex items-start gap-3 py-3 border-b"
               >
-                <div className="bg-neutral-100 rounded-lg w-full sm:w-20 h-36 sm:h-20 overflow-hidden">
+                <div className="w-16 h-16 flex-shrink-0 rounded overflow-hidden bg-neutral-100">
                   <img
                     src={item.product.image}
                     alt={item.product.product}
@@ -65,10 +62,10 @@ export default function CartSidebar() {
                   />
                 </div>
 
-                <div className="flex-1 space-y-2">
-                  <div className="flex justify-between items-start">
-                    <div className="space-y-1">
-                      <h4 className="font-semibold text-sm sm:text-base">{item.product.product}</h4>
+                <div className="flex-1 text-sm space-y-1">
+                  <div className="flex justify-between">
+                    <div>
+                      <h4 className="font-semibold text-sm">{item.product.product}</h4>
                       {item.selectedPackage && (
                         <p className="text-xs text-brand-500 font-medium">{item.selectedPackage.name}</p>
                       )}
@@ -76,7 +73,7 @@ export default function CartSidebar() {
                     <Button
                       variant="ghost"
                       size="icon"
-                      className="text-neutral-500"
+                      className="text-neutral-400 hover:text-neutral-600"
                       onClick={() =>
                         dispatch(removeFromCart({ productId: item.product._id, packageId }))
                       }
@@ -85,45 +82,41 @@ export default function CartSidebar() {
                     </Button>
                   </div>
 
-                  <p className="text-sm text-neutral-500 line-clamp-2">
+                  <p className="text-xs text-neutral-500 line-clamp-2">
                     {item.selectedPackage?.description || item.notes || item.product.description}
                   </p>
 
-                  <div className="flex justify-between items-center mt-2">
-                    <div className="flex items-center border rounded-md overflow-hidden">
+                  <div className="flex justify-between items-center pt-1">
+                    <div className="flex items-center border rounded overflow-hidden">
                       <Button
                         variant="ghost"
                         size="icon"
-                        className="h-8 w-8"
+                        className="h-6 w-6"
                         onClick={() =>
-                          dispatch(
-                            updateQuantity({
-                              productId: item.product._id,
-                              packageId,
-                              quantity: item.quantity - 1,
-                            })
-                          )
+                          dispatch(updateQuantity({
+                            productId: item.product._id,
+                            packageId,
+                            quantity: item.quantity - 1,
+                          }))
                         }
                         disabled={item.quantity <= 1}
                       >
-                        <span className="text-base">−</span>
+                        <span className="text-sm">−</span>
                       </Button>
-                      <span className="w-8 text-center text-sm">{item.quantity}</span>
+                      <span className="w-6 text-center text-sm">{item.quantity}</span>
                       <Button
                         variant="ghost"
                         size="icon"
-                        className="h-8 w-8"
+                        className="h-6 w-6"
                         onClick={() =>
-                          dispatch(
-                            updateQuantity({
-                              productId: item.product._id,
-                              packageId,
-                              quantity: item.quantity + 1,
-                            })
-                          )
+                          dispatch(updateQuantity({
+                            productId: item.product._id,
+                            packageId,
+                            quantity: item.quantity + 1,
+                          }))
                         }
                       >
-                        <span className="text-base">+</span>
+                        <span className="text-sm">+</span>
                       </Button>
                     </div>
                     <span className="font-semibold text-sm">
@@ -137,8 +130,8 @@ export default function CartSidebar() {
         </div>
       </ScrollArea>
 
-      <div className="p-4 md:p-6 border-t">
-        <div className="flex justify-between mb-3 text-sm md:text-base">
+      <div className="p-4 border-t">
+        <div className="flex justify-between mb-2 text-sm">
           <span className="font-medium">Subtotal</span>
           <span className="font-medium">{formatCurrency(totalAmount)}</span>
         </div>
@@ -146,7 +139,7 @@ export default function CartSidebar() {
           Delivery charges calculated at checkout
         </p>
         <SheetClose asChild>
-          <Button asChild className="w-full py-3 text-sm md:text-base">
+          <Button asChild className="w-full py-3 text-sm">
             <Link to="/checkout" className="flex items-center justify-center gap-1">
               Proceed to Checkout
               <ChevronRight className="h-4 w-4" />
