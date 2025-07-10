@@ -20,7 +20,7 @@ import {
 //   DialogTitle,
 //   DialogClose,
 // } from "@/components/ui/dialog";
-// import { AspectRatio } from "@/components/ui/aspect-ratio";
+// import { AspectRatio } // from "@/components/ui/aspect-ratio";
 // import { ScrollArea } from "@/components/ui/scroll-area";
 // import { useDispatch } from "react-redux";
 // import { addToCart } from "../../services/cartSlice";
@@ -122,7 +122,20 @@ interface ProductModalProps {
 }
 
 export default function App({ // Changed to App for default export
-  product,
+  product = { // Provide a default product object for testing
+    id: "mock-product-1",
+    product: "Mock Fuel Type",
+    description: "A high-quality mock fuel product.",
+    image: "https://placehold.co/1600x900/000000/FFFFFF?text=Product+Image",
+    price: 850,
+    hasPackageOptions: true,
+    packageOptions: [
+      { id: "20L", name: "20 Liters", price: 17000 },
+      { id: "50L", name: "50 Liters", price: 42500 },
+      { id: "custom", name: "Custom Quantity", price: 850, description: "Enter your desired quantity" }
+    ],
+    minimumOrder: 5,
+  },
   open,
   onOpenChange,
 }: ProductModalProps) {
@@ -174,8 +187,8 @@ export default function App({ // Changed to App for default export
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      {/* Adjusted DialogContent className: removed mx-4 */}
-      <DialogContent className="w-full max-w-sm sm:max-w-md p-0 overflow-hidden rounded-xl max-h-[90vh]">
+      {/* Adjusted DialogContent className for larger size and proper centering */}
+      <DialogContent className="w-full max-w-lg sm:max-w-xl p-0 overflow-hidden rounded-xl max-h-[90vh]">
         <ScrollArea className="max-h-[90vh]">
           <div className="flex flex-col">
             {/* Product Image */}
