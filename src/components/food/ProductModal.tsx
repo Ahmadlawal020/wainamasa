@@ -81,7 +81,7 @@ export default function ProductModal({
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="sm:max-w-md w-full p-0 overflow-hidden rounded-xl max-h-[90vh]">
+      <DialogContent className="sm:max-w-md w-full p-0 overflow-hidden rounded-xl max-h-[90vh] mx-[25px] sm:mx-0">
         <ScrollArea className="max-h-[90vh]">
           <div className="flex flex-col">
             {/* Product Image */}
