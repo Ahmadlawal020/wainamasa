@@ -87,7 +87,7 @@ export default function Header() {
             <div className="hidden lg:flex items-center text-sm text-neutral-700">
               <MapPin className="h-4 w-4 mr-2 text-green-500" />
               <span className="truncate max-w-xs xl:max-w-none">
-                B14 Close, Citec Estate, Mbora, Abuja
+                B14 Close, Citec Estate, Mbora, Abuja.
               </span>
             </div>
 
