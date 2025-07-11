@@ -17,7 +17,8 @@ export default function ProductCard({ product }: ProductCardProps) {
   const [isDialogOpen, setIsDialogOpen] = useState(false);
 
   return (
-    <div className="food-card group bg-white rounded-xl shadow-sm transition-all hover:shadow-md border border-neutral-100">
+    // <div className="food-card group bg-white rounded-xl shadow-sm transition-all hover:shadow-md border border-neutral-100">
+    <div className="food-card group bg-white rounded-xl shadow-sm transition-all hover:shadow-md border border-neutral-100 min-w-[160px]">
       <ProductModal
         product={product}
         open={isDialogOpen}

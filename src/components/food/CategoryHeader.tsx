@@ -23,7 +23,7 @@ export default function CategoryHeader({
   const [activeCategory, setActiveCategory] = useState("All");
 
   const categories: Category[] = [
-    { id: "All", label: "Featured", icon: Utensils },
+    { id: "all", label: "Featured", icon: Utensils },
     { id: "comboDeals", label: "Combo Deals", icon: Box },
     { id: "masa", label: "Masa", icon: Package },
     { id: "meat", label: "Meat", icon: Utensils },

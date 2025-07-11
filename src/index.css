@@ -1,4 +1,4 @@
-@import url('https://fonts.googleapis.com/css2?family=Onest:wght@400;500;600;700;800&display=swap');
+@import url("https://fonts.googleapis.com/css2?family=Onest:wght@400;500;600;700;800&display=swap");
 
 @tailwind base;
 @tailwind components;
@@ -15,16 +15,16 @@
     --popover: 0 0% 100%;
     --popover-foreground: 222.2 84% 4.9%;
 
-    --primary: 28 89% 53%; 
+    --primary: 28 89% 53%;
     --primary-foreground: 30 100% 98%;
 
-    --secondary: 92 55% 39%; 
+    --secondary: 92 55% 39%;
     --secondary-foreground: 30 100% 98%;
 
     --muted: 30 10% 96%;
     --muted-foreground: 215.4 16.3% 46.9%;
 
-    --accent: 92 55% 39%; 
+    --accent: 92 55% 39%;
     --accent-foreground: 222.2 47.4% 11.2%;
 
     --destructive: 0 84.2% 60.2%;
@@ -74,7 +74,7 @@
     --border: 24 20% 20%;
     --input: 217.2 32.6% 17.5%;
     --ring: 92 55% 39%;
-    
+
     --sidebar-background: 24 20% 10%;
     --sidebar-foreground: 30 5% 95.9%;
     --sidebar-primary: 92 55% 39%;
@@ -89,7 +89,7 @@
 @layer base {
   * {
     @apply border-border;
-    font-family: 'Onest', sans-serif;
+    font-family: "Onest", sans-serif;
   }
 
   body {
@@ -97,7 +97,12 @@
     font-feature-settings: "rlig" 1, "calt" 1;
   }
 
-  h1, h2, h3, h4, h5, h6 {
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6 {
     @apply font-semibold tracking-tight;
     line-height: 1.2;
   }
@@ -208,4 +213,11 @@
 
 .animate-slide-up {
   animation: slideUp 0.5s ease forwards;
+}
+
+/* In your global CSS file */
+.product-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 1rem;
 }
